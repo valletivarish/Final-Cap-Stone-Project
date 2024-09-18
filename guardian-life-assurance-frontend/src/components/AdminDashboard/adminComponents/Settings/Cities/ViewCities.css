@@ -1,0 +1,194 @@
+.cities-container {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cities-header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .state-selector {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+  }
+  
+  .state-dropdown {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .state-dropdown:focus {
+    border-color: #007bff;
+  }
+  
+  .add-city-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  
+  .add-city-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+  }
+  
+  .add-city-input:focus {
+    border-color: #007bff;
+  }
+  
+  .add-city-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-city-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .cities-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid #000; /* Match table border style */
+  }
+  
+  .cities-table th,
+  .cities-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #000; /* Consistent table row and column borders */
+    font-size: 14px;
+    color: #000; /* Black text color for consistency */
+  }
+  
+  .cities-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    background-color: #f1f1f1; /* Light background for table headers */
+  }
+  
+  .cities-table td {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .activate-button,
+  .deactivate-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .activate-button {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  .activate-button:hover {
+    background-color: #218838;
+  }
+  
+  .deactivate-button {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  
+  .deactivate-button:hover {
+    background-color: #c82333;
+  }
+  
+  .error {
+    color: #ff4d4f;
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .pagination-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+  }
+  
+  .custom-dropdown select {
+    padding: 10px 14px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .pagination-section button {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #000;
+    background-color: transparent;
+    border: 1px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .pagination-section button:hover {
+    background-color: #f1f1f1;
+  }
+
+  @media (max-width: 768px) {
+    .add-city-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .add-city-input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  
+    .add-city-button {
+      width: 100%;
+    }
+  
+    .state-dropdown {
+      width: 100%;
+    }
+
+    .cities-table th,
+    .cities-table td {
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+  
+    .pagination-section {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }

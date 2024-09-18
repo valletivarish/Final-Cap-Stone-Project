@@ -1,0 +1,100 @@
+.commission-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin: 40px auto;
+    background-color: #f4f4f9;
+  }
+  
+  .commission-card {
+    width: 100%;
+    max-width: 1300px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .commission-header {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .commission-filters {
+    display: grid;
+    grid-template-columns: repeat(4,1fr); 
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+  
+  .commission-filters input,
+  .commission-filters select {
+    padding: 10px;
+    width: 100%;
+    max-width: 280px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .commission-filters button {
+    padding: 12px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .commission-filters button:hover {
+    background-color: #0056b3;
+  }
+  .commission-filters button:last-child{
+    background-color: #6c757d;
+  }
+  .commission-filters button:last-child:hover {
+    background-color: #5a6268;
+  }
+  
+  .commission-filters button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+
+  
+  .button-edit,
+  .button-delete {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .button-edit {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .button-edit:hover {
+    background-color: #218838;
+  }
+  
+  .button-delete {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .button-delete:hover {
+    background-color: #c82333;
+  }
+  

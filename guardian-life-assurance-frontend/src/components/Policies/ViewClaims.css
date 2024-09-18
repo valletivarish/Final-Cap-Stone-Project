@@ -1,0 +1,109 @@
+.view-claims-container {
+    max-width: 1600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #333;
+    font-weight: 600;
+}
+
+.view-claims-filters {
+    display: grid;
+    /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));  */
+    grid-template-columns: repeat(4, 1fr); 
+    margin-bottom: 30px;
+    column-gap: 30px;
+    row-gap: 20px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.view-claims-filters input,
+.view-claims-filters select {
+    padding: 12px;
+    font-size: 16px;
+    outline: none;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+    width: 100%;
+}
+
+.view-claims-filters input:focus,
+.view-claims-filters select:focus {
+    border-color: #007bff;
+}
+
+.view-claims-filters button {
+    padding: 12px 18px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    display: inline-block;
+    width: 100%;
+}
+
+.view-claims-filters button:hover {
+    background-color: #0056b3;
+}
+
+.view-claims-filters button:last-child {
+    background-color: #6c757d;
+}
+
+.view-claims-filters button:last-child:hover {
+    background-color: #5a6268;
+}
+
+/* Media Query for smaller screens */
+@media (max-width: 768px) {
+    .view-claims-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .view-claims-filters button {
+        width: 100%; 
+    }
+}
+.approve-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 12px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.approve-button:hover {
+    background-color: #218838;
+}
+
+.reject-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.reject-button:hover {
+    background-color: #c82333;
+}

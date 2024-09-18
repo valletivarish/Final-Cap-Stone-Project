@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Include default Spring Boot configuration -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <!-- Property for log file location -->
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+
+    <!-- Console Appender for displaying INFO level messages -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- File Appender for logging TRACE and ERROR level messages -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <!-- Logger for TRACE and ERROR level messages to be logged in FILE -->
+    <logger name="com.monocept.myapp" level="TRACE" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <!-- Set root logger level to ERROR for the file appender -->
+    <root level="ERROR" additivity="false">
+        <appender-ref ref="FILE" />
+    </root>
+
+    <!-- Root Logger for INFO level messages to be displayed in CONSOLE -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+        <!-- Root Logger for INFO level messages to be displayed in CONSOLE -->
+
+</configuration>

@@ -1,0 +1,87 @@
+.button {
+  padding: 8px 15px;
+  font-size: 14px;
+  color: #fff;
+  border: none;
+  margin-right: 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.button.activate {
+  background-color: #28a745;
+  border: 1px solid #28a745;
+}
+
+.button.activate:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.button.deactivate {
+  background-color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+.button.deactivate:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.button.edit {
+  background-color: #007bff;
+  border: 1px solid #007bff;
+}
+.button.disabled {
+  background-color: #cccccc; 
+  border: 1px solid #cccccc;
+  cursor: not-allowed;
+}
+.button.edit:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+.orange{
+  background-color: #FF9900;
+}
+.orange:hover{
+  background-color: #faa01a;
+}
+body{
+  background-color: #f8f8f8;
+}
+.cancel-button-container {
+  display: flex;
+  justify-content: center;
+  text-align: right;
+  margin-top: 20px;
+}
+
+.button.cancel {
+  padding: 15px 20px;
+  font-size: 20px;
+  background-color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+.button.cancel:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+.cross-icon {
+  cursor: pointer;
+  color: black;
+  font-size: 18px;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.cross-icon:hover {
+  color: red;
+  transform: scale(1.2);
+}
+
+.cross-icon:active {
+  transform: scale(1);
+  color: maroon;
+}
