@@ -1,0 +1,80 @@
+.states-container {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .states-header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .add-state-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .add-state-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+    margin-right: 10px;
+  }
+  
+  .add-state-input:focus {
+    border-color: #007bff;
+  }
+  
+  .add-state-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-state-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .input-error {
+    color: #ff4d4f;
+    margin-top: 5px;
+    font-size: 14px;
+  }
+  
+  .error-input {
+    border-color: #ff4d4f;
+  }
+  
+
+  @media (max-width: 768px) {
+    .add-state-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .add-state-input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  
+    .add-state-button {
+      width: 100%;
+    }
+  }
+  

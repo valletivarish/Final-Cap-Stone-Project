@@ -1,0 +1,120 @@
+.commission-withdrawals-container {
+  max-width: 1500px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 8px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.commission-withdrawals-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1400px;
+}
+
+.commission-withdrawals-header {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.commission-withdrawals-filters {
+  width: 1370px;
+  display: grid;
+  grid-template-columns: repeat(4,1fr); 
+  column-gap: 40px;
+  row-gap: 20px;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.commission-withdrawals-filters input[type="number"],
+.commission-withdrawals-filters input[type="date"],
+.commission-withdrawals-filters select {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+
+.commission-withdrawals-filters input:focus,
+.commission-withdrawals-filters select:focus {
+  border-color: #007bff;
+}
+
+.commission-withdrawals-filters button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.commission-withdrawals-filters :last-child {
+  background-color: #6c757d;
+  
+}
+.commission-withdrawals-filters button:last-child:hover {
+  background-color: #5a6268;
+  
+}
+.commission-withdrawals-filters button:hover {
+  background-color: #0056b3;
+}
+
+.commission-withdrawals-filters button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.button-edit {
+  background-color: #28a745;
+  color: white;
+  padding: 12px 18px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-edit:hover {
+  background-color: #218838;
+}
+
+.button-delete {
+  background-color: #dc3545;
+  color: white;
+  padding: 12px 18px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-delete:hover {
+  background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+  .commission-withdrawals-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .commission-withdrawals-filters button {
+    width: 100%;
+  }
+}

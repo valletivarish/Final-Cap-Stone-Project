@@ -1,0 +1,36 @@
+.dropdown-container {
+    max-width: 200px;
+    padding: 0;
+  }
+  
+  .form-select {
+    background-color: #ffffff;
+    border: 1px solid #ff9800;
+    border-radius: 3px;
+    padding: 10px;
+    font-size: 15px;
+    color: #ff9800;
+    transition: all ease-in-out 0.3s;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .form-select:focus {
+    outline: none;
+    border-color: #ff9800;
+    background-color: #f9f9f9;
+  }
+  
+  .form-select option {
+    background-color: #ffffff;
+    color: #ff9800;
+    padding: 10px 15px;
+    font-size: 15px;
+  }
+  
+  .form-select option:hover {
+    background-color: #f2f2f2;
+    color: #ff9800;
+  }
+  
+  

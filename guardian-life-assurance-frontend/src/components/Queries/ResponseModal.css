@@ -1,0 +1,104 @@
+/* Modal overlay to blur out the background */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+  
+  /* Modal container for the main modal structure */
+  .modal-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    max-width: 550px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  /* Header for the modal */
+  .modal-container h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Textarea for entering the response */
+  .modal-container textarea {
+    width: 90%;
+    height: 150px;
+    padding: 12px;
+    font-size: 16px;
+    outline: none;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease;
+    resize: none;
+  }
+  
+  .modal-container textarea:focus {
+    border-color: #007bff;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  /* Modal buttons */
+  .modal-actions button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .modal-actions button:first-child {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .modal-actions button:first-child:hover {
+    background-color: #c82333;
+  }
+  
+  .modal-actions button:last-child {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .modal-actions button:last-child:hover {
+    background-color: #218838;
+  }
+  
+  /* Responsive design for smaller screens */
+  @media (max-width: 768px) {
+    .modal-container {
+      max-width: 90%;
+      padding: 15px;
+    }
+  
+    .modal-container h2 {
+      font-size: 20px;
+    }
+  
+    .modal-actions button {
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+  }
+  

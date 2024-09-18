@@ -1,0 +1,131 @@
+.document-upload-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    /* background-color: #f4f4f4; */
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .document-upload-header {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .document-upload-form-group {
+    margin-bottom: 20px;
+  }
+  
+  .document-upload-label {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    display: block;
+    color: #555;
+  }
+  
+  .document-upload-select,
+  .document-upload-input {
+    width: 97%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+    background-color: #fff;
+    color: #333;
+    transition: all 0.3s ease;
+  }
+  
+  .document-upload-input:focus,
+  .document-upload-select:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+  }
+  
+  .document-upload-button {
+    padding: 12px 30px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: block;
+    margin: 20px auto;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .document-upload-button:hover {
+    background-color: #45a049;
+
+  }
+  
+  .document-upload-subheader {
+    font-size: 1.5rem;
+    margin-top: 30px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .document-upload-list {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .document-upload-row {
+    display: contents;
+  }
+  
+  .document-upload-name {
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  .document-upload-status {
+    padding: 10px;
+    text-align: center;
+    color: #777;
+  }
+  
+  .document-upload-download-button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    text-align: center;
+  }
+  
+  .document-upload-download-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .document-upload-no-documents {
+    font-style: italic;
+    color: #777;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .document-upload-reupload-message {
+    color: #d9534f;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+    font-size: 1.1rem;
+  }
+  
