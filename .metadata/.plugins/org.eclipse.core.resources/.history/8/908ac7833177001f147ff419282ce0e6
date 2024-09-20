@@ -1,0 +1,72 @@
+package com.monocept.myapp.service;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.monocept.myapp.repository.InstallmentRepository;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j
+public class StripeService {
+
+	@Value("${api.stripe.key}")
+	private String stripeApiKey;
+	
+	
+	@PostConstruct
+	public void init() {
+		Stripe.apiKey = stripeApiKey;
+	}
+	
+	@Autowired
+	private InstallmentRepository installmentRepository;
+
+
+	public Session createCheckoutSession(double amount, String successUrl, String cancelUrl, Map<String, Object> requestData) {
+	    try {
+	        String modifiedSuccessUrl = successUrl + "?session_id={CHECKOUT_SESSION_ID}";
+
+	        SessionCreateParams.Builder sessionBuilder = SessionCreateParams.builder()
+	            .setMode(SessionCreateParams.Mode.PAYMENT)
+	            .setSuccessUrl(modifiedSuccessUrl)
+	            .setCancelUrl(cancelUrl)
+	            .addLineItem(SessionCreateParams.LineItem.builder()
+	                .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
+	                    .setCurrency("INR")
+	                    .setUnitAmount((long) (amount * 100))  
+	                    .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
+	                        .setName("Policy Payment") 
+	                        .build())
+	                    .build())
+	                .setQuantity(1L)
+	                .build());
+
+	        Map<String, String> metadata = new HashMap<>();
+	        metadata.put("type", "policyPurchase");
+	        metadata.put("insuranceSchemeId", requestData.get("insuranceSchemeId").toString());
+	        metadata.put("premiumType", requestData.get("premiumType").toString());
+	        metadata.put("policyTerm", requestData.get("policyTerm").toString());
+	        metadata.put("sumAssured", requestData.get("assuredAmount").toString());
+	        metadata.put("premiumAmount", requestData.get("premiumAmount").toString());
+	        metadata.put("customerId", requestData.get("customerId").toString());
+	        metadata.put("agentId", requestData.get("agentId").toString());
+	        sessionBuilder.putAllMetadata(metadata);
+
+	        SessionCreateParams params = sessionBuilder.build();
+	        return Session.create(params);
+	    } catch (StripeException e) {
+	        throw new RuntimeException("Stripe checkout session creation failed", e);
+	    }
+	}
+}

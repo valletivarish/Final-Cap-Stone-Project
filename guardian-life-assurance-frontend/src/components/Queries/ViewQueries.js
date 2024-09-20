@@ -31,7 +31,7 @@ const ViewQueries = () => {
     debounce(async (params) => {
       try {
         const response = await getAllQueries(params);
-        const sanitizedData = sanitizeQueryData(response, ["customerId", "queryId", "title", "message", "resolved","resolvedAt","resolvedBy"], handleRespond);
+        const sanitizedData = sanitizeQueryData(response, ["customerId", "queryId", "title", "message","response", "resolved","resolvedAt","resolvedBy"], handleRespond);
         setQueries(sanitizedData);
       } catch (err) {
         setError("Failed to fetch queries");

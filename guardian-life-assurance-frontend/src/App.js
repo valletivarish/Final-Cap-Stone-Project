@@ -141,7 +141,7 @@ function App() {
         <Route path="/customer-dashboard/:customerId/documents" element={<DocumentUpload />} />
         <Route path="customer-dashboard/:customerId/plans/:planId" element={<SchemePage />} />
         <Route path="customer-dashboard/:customerId/policies" element={<PolicyPage />} />
-        <Route path="/customer/:customerId/policies/:policyId" element={<PolicyDetailPage />} />
+        <Route path="/customer-dashboard/:customerId/policies/:policyId" element={<PolicyDetailPage />} />
 
         {/* Agent Routes */}
         <Route path="agent-dashboard" element={<AgentDashboard />} /> 

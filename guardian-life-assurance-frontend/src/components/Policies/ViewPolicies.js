@@ -21,10 +21,6 @@ const ViewPolicies = () => {
   const size = parseInt(searchParams.get("size")) || 5;
   const sortBy = searchParams.get("sortBy") || "policyNo";
   const direction = searchParams.get("direction") || "asc";
-
-  const [customerName, setCustomerName] = useState(searchParams.get("customerName") || "");
-  const [city, setCity] = useState(searchParams.get("city") || "");
-  const [state, setState] = useState(searchParams.get("state") || "");
   const [sortField, setSortField] = useState(sortBy);
   const [sortDirection, setSortDirection] = useState(direction);
 
@@ -65,9 +61,6 @@ const ViewPolicies = () => {
           size,
           sortBy: sortField,
           direction: sortDirection,
-          customerName,
-          city,
-          state,
         };
 
         const response = await getAllPolicies(params);
@@ -80,7 +73,7 @@ const ViewPolicies = () => {
     };
 
     fetchPolicies();
-  }, [isVerified, searchParams, sortField, sortDirection, customerName, city, state, page, size, keysToBeIncluded]);
+  }, [isVerified, searchParams]);
 
   const handleSearch = () => {
     const currentParams = Object.fromEntries(searchParams);
@@ -92,9 +85,6 @@ const ViewPolicies = () => {
   };
 
   const handleReset = () => {
-    setCustomerName("");
-    setCity("");
-    setState("");
     setSortField("policyNo");
     setSortDirection("asc");
     setSearchParams({});

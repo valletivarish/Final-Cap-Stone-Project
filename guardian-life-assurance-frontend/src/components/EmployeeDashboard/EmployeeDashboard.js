@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaUserTie, FaUsers, FaFolder, FaSitemap, FaThList, FaFileInvoice, FaMoneyCheck, FaFileAlt, FaClipboardList, FaQuestionCircle, FaUniversity, FaCity } from "react-icons/fa"; 
-import { getEmployeeDashboardCount } from "../../services/employeeServices"; 
+import { getEmployeeDashboardCount, getEmployeeDetails } from "../../services/employeeServices"; 
 import Card from "../../sharedComponents/Card/Card"; 
 import "./EmployeeDashboard.css";
 
@@ -21,11 +21,13 @@ const EmployeeDashboard = () => {
     cities: 0,
   });
 
-  const employeeName = "Varish"
+  const employeeName = localStorage.getItem("employeeName")
 
   useEffect(() => {
     const fetchCounts = async () => {
       try {
+        const employeeResponse=await getEmployeeDetails();
+        localStorage.setItem("employeeName",employeeResponse.fullName);
         const response = await getEmployeeDashboardCount(); 
         setCounts(response);
       } catch (error) {

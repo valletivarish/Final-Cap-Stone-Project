@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { getAllCustomersByAgent } from "../../../../services/agentServices"; 
 import Table from "../../../../sharedComponents/Table/Table";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { showToastError } from "../../../../utils/toast/Toast";
 import { sanitizeAgentCustomerData } from "../../../../utils/helpers/SanitizeData";
 import '../../../Customers/ViewCustomers.css';
+import { verifyAgent } from "../../../../services/authServices";
 
 
 const ViewAgentCustomers = () => {
@@ -26,7 +27,29 @@ const ViewAgentCustomers = () => {
 
   const keysToBeIncluded = ["customerId", "firstName", "lastName", "email", "dateOfBirth", "city", "state"];
 
+  const [isAgent, setIsAgent] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
+
+  useEffect(() => {
+    if(!isAgent){
+      return;
+    }
     const fetchCustomers = async () => {
       try {
         const params = {
@@ -40,7 +63,7 @@ const ViewAgentCustomers = () => {
           isActive,
         };
 
-        const response = await getAllCustomersByAgent(params); // Updated API call to fetch customers by agent
+        const response = await getAllCustomersByAgent(params); 
         const sanitizedCustomers = sanitizeAgentCustomerData(response, keysToBeIncluded);
         setCustomers(sanitizedCustomers);
       } catch (error) {
@@ -50,7 +73,7 @@ const ViewAgentCustomers = () => {
     };
 
     fetchCustomers();
-  }, [searchParams]); // Fetch customers when search params change
+  }, [searchParams,isAgent]); 
 
 
 

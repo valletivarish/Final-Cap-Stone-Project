@@ -70,7 +70,6 @@ h1 {
     background-color: #5a6268;
 }
 
-/* Media Query for smaller screens */
 @media (max-width: 768px) {
     .view-claims-filters {
         grid-template-columns: 1fr;

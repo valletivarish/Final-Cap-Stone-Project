@@ -1,5 +1,7 @@
 package com.monocept.myapp.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -261,7 +263,7 @@ public class AgentManagementServiceImpl implements AgentManagementService {
 
 	@Override
 	public Double getTotalCommission() {
-		return getAgentFromSecurityContext().getTotalCommission();
+		return BigDecimal.valueOf(getAgentFromSecurityContext().getTotalCommission()).setScale(2,RoundingMode.HALF_UP).doubleValue();
 	}
 
 	@Override

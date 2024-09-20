@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Modal from "react-modal";
 import {
   cancelPolicy,
@@ -12,6 +12,7 @@ import {
   showToastError,
   showToastSuccess,
 } from "../../../../utils/toast/Toast";
+import { verifyCustomer } from "../../../../services/authServices";
 
 const PolicyDetailPage = () => {
   const { customerId, policyId } = useParams();
@@ -22,6 +23,26 @@ const PolicyDetailPage = () => {
   const [claimReason, setClaimReason] = useState("");
   const [claimAmount, setClaimAmount] = useState("");
   const [document, setDocument] = useState(null);
+
+  const navigate = useNavigate();
+  const [isCustomer, setIsCustomer] = useState(false);
+
+  useEffect(() => {
+    const verifyCustomerAndNavigate = async () => {
+      try {
+        const response = await verifyCustomer();
+        if (!response) {
+          navigate("/login");
+          return;
+        } else {
+          setIsCustomer(true);
+        }
+      } catch (error) {
+        navigate("/login");
+      }
+    };
+    verifyCustomerAndNavigate();
+  }, []);
 
   const handlePay = async (installmentId, amountDue, event) => {
     event.preventDefault();
@@ -38,6 +59,7 @@ const PolicyDetailPage = () => {
     try {
       const response = await initiateInstallmentCheckout(
         customerId,
+        policyId,
         installmentId,
         amountDue
       );
@@ -47,27 +69,27 @@ const PolicyDetailPage = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetcByPolicyId(customerId, policyId);
-        setPolicyData(data);
-        const today = new Date().toISOString().split("T")[0];
-        if (data.maturityDate === today && policyData.policyStatus==="COMPLETE") {
-          setIsMaturityEnabled(true);
-        }
-
-        if (
-          data.policyStatus === "PENDING" ||
-          data.policyStatus === "COMPLETE"
-        ) {
-          setIsClaimEnabled(true);
-        }
-      } catch (error) {
-        console.error("Error fetching policy details:", error);
+  const fetchData = async () => {
+    try {
+      const data = await fetcByPolicyId(customerId, policyId);
+      setPolicyData(data);
+      const today = new Date().toISOString().split("T")[0];
+      if (data.maturityDate === today && policyData.policyStatus==="COMPLETE") {
+        setIsMaturityEnabled(true);
       }
-    };
 
+      if (
+        data.policyStatus === "PENDING" ||
+        data.policyStatus === "COMPLETE"
+      ) {
+        setIsClaimEnabled(true);
+      }
+    } catch (error) {
+      console.error("Error fetching policy details:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [customerId, policyId]);
 
@@ -95,8 +117,8 @@ const PolicyDetailPage = () => {
     try {
       await cancelPolicy(customerId, policyId);
       showToastSuccess("Policy Cancelled successfully");
-      const data = await fetcByPolicyId(customerId, policyId);
-      setPolicyData(data);
+      fetchData();
+      setIsClaimEnabled(false);
     } catch (error) {
       console.error("Error canceling policy:", error);
     }

@@ -6,7 +6,6 @@ import {
 } from "../../../../services/gaurdianLifeAssuranceServices";
 import Table from "../../../../sharedComponents/Table/Table";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { debounce } from "../../../../utils/helpers/Debounce";
 import {
   showToastError,
   showToastSuccess,
@@ -16,7 +15,7 @@ import { verifyAdmin, verifyEmployee } from "../../../../services/authServices";
 import "./ViewPlan.css";
 import { Helper } from "../../../../utils/helpers/Helper";
 
-const ViewPlan = ({setRefreshNavbar}) => {
+const ViewPlan = ({ setRefreshNavbar }) => {
   const [plans, setPlans] = useState([]);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,8 +24,6 @@ const ViewPlan = ({setRefreshNavbar}) => {
 
   const page = parseInt(searchParams.get("page")) || 0;
   const size = parseInt(searchParams.get("size")) || 10;
-  const sortBy = searchParams.get("sortBy") || "planId";
-  const direction = searchParams.get("direction") || "ASC";
 
   useEffect(() => {
     const fetchRoleAndVerify = async () => {
@@ -45,49 +42,44 @@ const ViewPlan = ({setRefreshNavbar}) => {
     fetchRoleAndVerify();
   }, [navigate]);
 
-  const debouncedFetchPlans = useCallback(
-    debounce(async () => {
-      try {
-        const response = await getAllPlans(page, size, sortBy, direction);
-        const sanitizedData = sanitizePlanData(
-          response,
-          handleEdit,
-          handleToggleStatus
-        );
-        setPlans(sanitizedData);
-      } catch (err) {
-        setError("Failed to fetch plans");
-        showToastError("Failed to fetch plans");
-      }
-    }, 300),
-    [page, size, sortBy, direction]
-  );
+  const fetchPlans = async () => {
+    try {
+      if (!isVerified) return;
+      const response = await getAllPlans({page, size});
+      const sanitizedData = sanitizePlanData(response, handleEdit, handleToggleStatus);
+      setPlans(sanitizedData);
+    } catch (err) {
+      setError("Failed to fetch plans");
+      showToastError("Failed to fetch plans");
+    }
+  };
 
   useEffect(() => {
-    debouncedFetchPlans();
-  }, [debouncedFetchPlans]);
+    fetchPlans();
+  }, [searchParams, isVerified]);
+
   const getRoleLink = (link = "") => {
-    return Helper.getRoleLink(localStorage.getItem("role"),null, link);
+    return Helper.getRoleLink(localStorage.getItem("role"), null, link);
   };
 
   const handleEdit = (planId, data) => {
-    const navigationLink=getRoleLink(`/plans/${planId}/edit`);
+    const navigationLink = getRoleLink(`/plans/${planId}/edit`);
     navigate(navigationLink, { state: { data } });
   };
 
   const handleToggleStatus = async (planId, isActive) => {
     try {
       if (isActive) {
-        const response=await deactivatePlan(planId);
+        const response = await deactivatePlan(planId);
         showToastSuccess(response);
       } else {
-        const response=await activatePlan(planId);
+        const response = await activatePlan(planId);
         showToastSuccess(response);
       }
       setRefreshNavbar((prev) => !prev);
-      debouncedFetchPlans();
+      fetchPlans();
     } catch (err) {
-      console.log(err)
+      console.log(err);
       showToastError(`Failed to ${isActive ? "deactivate" : "activate"} plan`);
     }
   };

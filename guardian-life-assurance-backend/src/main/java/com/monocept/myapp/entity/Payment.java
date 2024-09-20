@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Entity
@@ -35,6 +36,7 @@ public class Payment {
 	private long customerId;
 
 	@Column(name = "amount", nullable = false)
+	@PositiveOrZero(message = "Amount must be zero or positive")
 	private double amount;
 
 	@Enumerated(EnumType.STRING)

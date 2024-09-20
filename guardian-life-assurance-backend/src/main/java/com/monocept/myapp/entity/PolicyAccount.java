@@ -2,9 +2,7 @@ package com.monocept.myapp.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -44,18 +42,18 @@ public class PolicyAccount {
 
     @Column(name = "issueDate")
     @CreationTimestamp
-    private LocalDate issueDate=LocalDate.now(); //
+    private LocalDate issueDate=LocalDate.now(); 
 
     @Column(name = "maturityDate")
-    private LocalDate maturityDate; //
+    private LocalDate maturityDate; 
 
     @Column(name = "premiumType")
-    private PremiumType premiumType; //
+    private PremiumType premiumType; 
 
     @Column(name = "sumAssured")
     private Double sumAssured;
     
-    @Column(name = "policyTerm")
+    @Column(name = "policyTerm") 
     private Long policyTerm;
 
     @Column(name = "premiumAmount")
@@ -64,6 +62,7 @@ public class PolicyAccount {
     private Double installmentAmount;
     
     private Double totalPaidAmount;
+   
     
     @OneToMany(mappedBy = "insurancePolicy", cascade = CascadeType.ALL)
     private List<Installment> installments;
@@ -75,20 +74,17 @@ public class PolicyAccount {
     @JoinColumn(name = "agentId", referencedColumnName = "agentId")
     private Agent agent;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "policyAccount", cascade = CascadeType.ALL)
     private List<Nominee> nominees;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "policyAccount", cascade = CascadeType.ALL)
     private List<Payment> payments;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "claim")
     private Claim claims;
-
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
-    private Set<SubmittedDocument> submittedDocuments = new HashSet<>();
     
-    @ManyToOne
+    @ManyToOne 
     @JoinColumn(name = "tax_id", referencedColumnName = "taxId")
     private TaxSetting taxSetting;
     

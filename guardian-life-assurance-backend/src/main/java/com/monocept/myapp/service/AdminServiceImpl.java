@@ -1,8 +1,9 @@
 package com.monocept.myapp.service;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -162,5 +163,14 @@ public class AdminServiceImpl implements AdminService {
 			return userDetails.getUsername();
 		}
 		return null;
+	}
+
+	@Override
+	public Map<String, Object> getUserByEmail(String currentUserEmail) {
+		User user = userRepository.findByUsernameOrEmail(currentUserEmail, currentUserEmail).orElseThrow(()->new GuardianLifeAssuranceException.UserNotFoundException("User Not found"));
+		Admin admin = adminRepository.findByUser(user);
+		Map<String,Object> userDetails=new HashMap<>();
+		userDetails.put("AdminName", admin.getName());
+		return userDetails;
 	}
 }

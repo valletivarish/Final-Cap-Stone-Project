@@ -32,7 +32,7 @@ public class AgentEarningsReportService {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        PdfWriter writer = PdfWriter.getInstance(document, out);
+        PdfWriter.getInstance(document, out);
         document.open();
 
         addCompanyHeader(document);

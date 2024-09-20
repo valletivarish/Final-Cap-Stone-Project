@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Entity
@@ -24,8 +26,12 @@ public class Agent {
 	@Column
 	private long agentId;
 
+	@Column(name = "firstName")
+	@NotEmpty(message = "First name is required")
 	private String firstName;
 
+	@Column(name = "lastName")
+	@NotEmpty(message = "Last name is required")
 	private String lastName;
 
 	@OneToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH })
@@ -38,9 +44,9 @@ public class Agent {
 	@Column
 	private boolean active = true;
 
-	@Column
-	private double totalCommission = 0.0;
-	
+	@Column(name = "totalCommission")
+	@PositiveOrZero(message = "Total commission must be zero or positive")
+	private double totalCommission;
 
 	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinColumn(name = "userid")

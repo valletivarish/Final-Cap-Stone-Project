@@ -1,6 +1,7 @@
 package com.monocept.myapp.service;
 
-import java.sql.Date;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,13 +41,13 @@ public class CommissionService {
     public PagedResponse<CommissionResponseDto> getCommissionsWithFilters(int page, int size, String sortBy,
                                                               String direction, Long agentId, 
                                                               CommissionType commissionType,
-                                                              LocalDate from, LocalDate to, Double amount) {
+                                                              LocalDate from, LocalDate to) {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.DESC.name()) 
                     ? Sort.by(sortBy).descending() 
                     : Sort.by(sortBy).ascending();
 
         PageRequest pageRequest = PageRequest.of(page, size, sort);
-        Page<Commission> commissionPage = commissionRepository.findAllCommissions(agentId, commissionType, from, to, amount, pageRequest);
+        Page<Commission> commissionPage = commissionRepository.findAllCommissions(agentId, commissionType, from, to, pageRequest);
 
         List<CommissionResponseDto> commissions = commissionPage.getContent().stream().map(commission->convertCommissionToCommissionResponseDto(commission)).collect(Collectors.toList());
         
@@ -57,9 +58,12 @@ public class CommissionService {
 
 	private CommissionResponseDto convertCommissionToCommissionResponseDto(Commission commission) {
 		CommissionResponseDto commissionResponseDto=new CommissionResponseDto();
+		
 		commissionResponseDto.setAgentId(commission.getAgent().getAgentId());
 		commissionResponseDto.setAgentName(commission.getAgent().getFirstName()+" "+commission.getAgent().getLastName());
-		commissionResponseDto.setAmount(commission.getAmount());
+		commissionResponseDto.setAmount(BigDecimal.valueOf(commission.getAmount())
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue());
 		commissionResponseDto.setCommissionId(commission.getCommissionId());
 		commissionResponseDto.setCommissionType(commission.getCommissionType().toString());
 		commissionResponseDto.setIssueDate(commission.getIssueDate());
@@ -67,13 +71,13 @@ public class CommissionService {
 	}
 
 	public PagedResponse<CommissionResponseDto> getCommissionsWithFilters(int page, int size, String sortBy,
-			String direction, CommissionType commissionType, LocalDate from, LocalDate to, Double amount) {
+			String direction, CommissionType commissionType, LocalDate from, LocalDate to) {
 		Sort sort = direction.equalsIgnoreCase(Sort.Direction.DESC.name()) 
                 ? Sort.by(sortBy).descending() 
                 : Sort.by(sortBy).ascending();
 
     PageRequest pageRequest = PageRequest.of(page, size, sort);
-    Page<Commission> commissionPage = commissionRepository.findAllCommissions(getAgentFromSecurityContext().getAgentId(), commissionType, from, to, amount, pageRequest);
+    Page<Commission> commissionPage = commissionRepository.findAllCommissions(getAgentFromSecurityContext().getAgentId(), commissionType, from, to, pageRequest);
 
     List<CommissionResponseDto> commissions = commissionPage.getContent().stream().map(commission->convertCommissionToCommissionResponseDto(commission)).collect(Collectors.toList());
     

@@ -88,7 +88,7 @@ const SchemeDetails = () => {
         { field: 'Min Age', value: scheme.minAge },
         { field: 'Max Age', value: scheme.maxAge },
         { field: 'Profit Ratio', value: scheme.profitRatio },
-        { field: 'Registration Commission', value: scheme.registrationCommRatio },
+        { field: 'Registration Commission', value: scheme.registrationCommAmount },
         { field: 'Installment Commission', value: scheme.installmentCommRatio },
       ];
   
@@ -109,7 +109,7 @@ const SchemeDetails = () => {
         minAge: scheme.minAge,
         maxAge: scheme.maxAge,
         profitRatio: scheme.profitRatio,
-        registrationCommRatio: scheme.registrationCommRatio,
+        registrationCommAmount: scheme.registrationCommAmount,
         installmentCommRatio: scheme.installmentCommRatio,
         detailDescription: scheme.detailDescription,
       };
@@ -228,8 +228,8 @@ const SchemeDetails = () => {
             <label>Registration Commission (INR)</label>
             <input
               type="number"
-              name="registrationCommRatio"
-              value={scheme.registrationCommRatio}
+              name="registrationCommAmount"
+              value={scheme.registrationCommAmount}
               onChange={handleInputChange}
               disabled={!isEditing}
             />

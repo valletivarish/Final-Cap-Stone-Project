@@ -25,7 +25,7 @@ const AddScheme = ({ setRefreshNavbar }) => {
     minAge: "",
     maxAge: "",
     profitRatio: "",
-    registrationCommRatio: "",
+    registrationCommAmount: "",
     installmentCommRatio: "",
     requiredDocuments: [],
   });
@@ -108,48 +108,53 @@ const AddScheme = ({ setRefreshNavbar }) => {
     });
 
     try {
-    const minAmount = parseFloat(formData.minAmount);
-    const maxAmount = parseFloat(formData.maxAmount);
-    const minPolicyTerm = parseInt(formData.minPolicyTerm, 10);
-    const maxPolicyTerm = parseInt(formData.maxPolicyTerm, 10);
-    const minAge = parseInt(formData.minAge, 10);
-    const maxAge = parseInt(formData.maxAge, 10);
-    const profitRatio = parseFloat(formData.profitRatio);
-    const registrationCommRatio = parseFloat(formData.registrationCommRatio);
-    const installmentCommRatio = parseFloat(formData.installmentCommRatio);
+      const minAmount = parseFloat(formData.minAmount);
+      const maxAmount = parseFloat(formData.maxAmount);
+      const minPolicyTerm = parseInt(formData.minPolicyTerm, 10);
+      const maxPolicyTerm = parseInt(formData.maxPolicyTerm, 10);
+      const minAge = parseInt(formData.minAge, 10);
+      const maxAge = parseInt(formData.maxAge, 10);
+      const profitRatio = parseFloat(formData.profitRatio);
+      const registrationCommAmount = parseFloat(formData.registrationCommAmount);
+      const installmentCommRatio = parseFloat(formData.installmentCommRatio);
 
-    if (minAmount >= maxAmount) {
-      showToastError("Minimum amount should be less than the maximum amount.");
-      return;
-    }
-    if (minPolicyTerm >= maxPolicyTerm) {
-      showToastError("Minimum policy term should be less than the maximum policy term.");
-      return;
-    }
-    if (minAge >= maxAge) {
-      showToastError("Minimum age should be less than the maximum age.");
-      return;
-    }
-
-    const numericFields = [
-      { field: 'Min Amount', value: minAmount },
-      { field: 'Max Amount', value: maxAmount },
-      { field: 'Min Policy Term', value: minPolicyTerm },
-      { field: 'Max Policy Term', value: maxPolicyTerm },
-      { field: 'Min Age', value: minAge },
-      { field: 'Max Age', value: maxAge },
-      { field: 'Profit Ratio', value: profitRatio },
-      { field: 'Registration Commission', value: registrationCommRatio },
-      { field: 'Installment Commission', value: installmentCommRatio },
-    ];
-
-    for (const { field, value } of numericFields) {
-      if (isNaN(value) || value < 0) {
-        showToastError(`${field} should not be less than 0 and must be a valid number.`);
+      if (minAmount >= maxAmount) {
+        showToastError(
+          "Minimum amount should be less than the maximum amount."
+        );
         return;
       }
-    }
-  
+      if (minPolicyTerm >= maxPolicyTerm) {
+        showToastError(
+          "Minimum policy term should be less than the maximum policy term."
+        );
+        return;
+      }
+      if (minAge >= maxAge) {
+        showToastError("Minimum age should be less than the maximum age.");
+        return;
+      }
+
+      const numericFields = [
+        { field: "Min Amount", value: minAmount },
+        { field: "Max Amount", value: maxAmount },
+        { field: "Min Policy Term", value: minPolicyTerm },
+        { field: "Max Policy Term", value: maxPolicyTerm },
+        { field: "Min Age", value: minAge },
+        { field: "Max Age", value: maxAge },
+        { field: "Profit Ratio", value: profitRatio },
+        { field: "Registration Commission", value: registrationCommAmount },
+        { field: "Installment Commission", value: installmentCommRatio },
+      ];
+
+      for (const { field, value } of numericFields) {
+        if (isNaN(value) || value < 0) {
+          showToastError(
+            `${field} should not be less than 0 and must be a valid number.`
+          );
+          return;
+        }
+      }
       await createInsuranceScheme(planId, formDataObj);
       showToastSuccess("Insurance scheme added successfully.");
       setFormData({
@@ -163,7 +168,7 @@ const AddScheme = ({ setRefreshNavbar }) => {
         minAge: "",
         maxAge: "",
         profitRatio: "",
-        registrationCommRatio: "",
+        registrationCommAmount: "",
         installmentCommRatio: "",
         requiredDocuments: [],
       });
@@ -289,14 +294,14 @@ const AddScheme = ({ setRefreshNavbar }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="registrationCommRatio">
+              <label htmlFor="registrationCommAmount">
                 Registration Commission Amount
               </label>
               <input
                 type="number"
-                id="registrationCommRatio"
-                name="registrationCommRatio"
-                value={formData.registrationCommRatio}
+                id="registrationCommAmount"
+                name="registrationCommAmount"
+                value={formData.registrationCommAmount}
                 onChange={handleInputChange}
                 min="0"
                 step="0.1"

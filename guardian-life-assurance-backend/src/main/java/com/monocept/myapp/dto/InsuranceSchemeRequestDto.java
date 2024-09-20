@@ -44,8 +44,8 @@ public class InsuranceSchemeRequestDto {
     @PositiveOrZero(message = "Profit ratio must be a non-negative number")
     private Double profitRatio;
 
-    @PositiveOrZero(message = "Registration commission ratio must be a non-negative number")
-    private Double registrationCommRatio;
+    @PositiveOrZero(message = "Registration commission Amount must be a non-negative number")
+    private Double registrationCommAmount;
 
     @PositiveOrZero(message = "Installment commission ratio must be a non-negative number")
     private Double installmentCommRatio;

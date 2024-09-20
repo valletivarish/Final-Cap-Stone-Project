@@ -1,22 +1,45 @@
 import React, { useState, useEffect } from "react";
-import {updateAgent } from "../../../../services/gaurdianLifeAssuranceServices";
+import { updateAgent } from "../../../../services/gaurdianLifeAssuranceServices";
 import { getAgentProfile } from "../../../../services/agentServices";
 
-import './AgentProfile.css';
-import { showToastSuccess, showToastError } from "../../../../utils/toast/Toast";
+import "./AgentProfile.css";
+import {
+  showToastSuccess,
+  showToastError,
+} from "../../../../utils/toast/Toast";
+import { verifyAgent } from "../../../../services/authServices";
+import { useNavigate } from "react-router-dom";
 
 const AgentProfile = () => {
   const [agentData, setAgentData] = useState({
-    agentId: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    username: '',
-    houseNo: '',
-    apartment: '',
-    pincode: '',
+    agentId: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    houseNo: "",
+    apartment: "",
+    pincode: "",
   });
   const [loading, setLoading] = useState(true);
+  const [isAgent, setIsAgent] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
 
   useEffect(() => {
     const fetchAgentData = async () => {
@@ -25,7 +48,7 @@ const AgentProfile = () => {
         setAgentData(response);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching agent data:', error);
+        console.error("Error fetching agent data:", error);
         setLoading(false);
       }
     };
@@ -41,9 +64,9 @@ const AgentProfile = () => {
   const handleSave = async () => {
     try {
       await updateAgent(agentData);
-      showToastSuccess('Agent details updated successfully!');
+      showToastSuccess("Agent details updated successfully!");
     } catch (error) {
-      showToastError('Failed to update agent details.');
+      showToastError("Failed to update agent details.");
     }
   };
 
@@ -52,81 +75,97 @@ const AgentProfile = () => {
   }
 
   return (
-    <div className="agent-profile-container">
-      <h2>Agent Profile</h2>
+    <>
+      {isAgent && (
+        <div className="agent-profile-container">
+          <h2>Agent Profile</h2>
 
-      <div className="form-group">
-        <label>Agent ID:</label>
-        <input type="text" name="agentId" value={agentData.agentId} readOnly />
-      </div>
+          <div className="form-group">
+            <label>Agent ID:</label>
+            <input
+              type="text"
+              name="agentId"
+              value={agentData.agentId}
+              readOnly
+            />
+          </div>
 
-      <div className="form-group">
-        <label>First Name:</label>
-        <input
-          type="text"
-          name="firstName"
-          value={agentData.firstName || ''}
-          onChange={handleInputChange}
-        />
-      </div>
+          <div className="form-group">
+            <label>First Name:</label>
+            <input
+              type="text"
+              name="firstName"
+              value={agentData.firstName || ""}
+              onChange={handleInputChange}
+            />
+          </div>
 
-      <div className="form-group">
-        <label>Last Name:</label>
-        <input
-          type="text"
-          name="lastName"
-          value={agentData.lastName || ''}
-          onChange={handleInputChange}
-        />
-      </div>
+          <div className="form-group">
+            <label>Last Name:</label>
+            <input
+              type="text"
+              name="lastName"
+              value={agentData.lastName || ""}
+              onChange={handleInputChange}
+            />
+          </div>
 
-      <div className="form-group">
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={agentData.email || ''}
-          onChange={handleInputChange}
-        />
-      </div>
+          <div className="form-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={agentData.email || ""}
+              onChange={handleInputChange}
+            />
+          </div>
 
-      <div className="form-group">
-        <label>Username:</label>
-        <input type="text" name="username" value={agentData.username || ''} readOnly />
-      </div>
+          <div className="form-group">
+            <label>Username:</label>
+            <input
+              type="text"
+              name="username"
+              value={agentData.username || ""}
+              readOnly
+            />
+          </div>
 
-      <div className="form-group">
-        <label>House No:</label>
-        <input
-          type="text"
-          name="houseNo"
-          value={agentData.houseNo || ''}
-          onChange={handleInputChange}
-        />
-      </div>
+          <div className="form-group">
+            <label>House No:</label>
+            <input
+              type="text"
+              name="houseNo"
+              value={agentData.houseNo || ""}
+              onChange={handleInputChange}
+            />
+          </div>
 
-      <div className="form-group">
-        <label>Apartment:</label>
-        <input
-          type="text"
-          name="apartment"
-          value={agentData.apartment || ''}
-          onChange={handleInputChange}
-        />
-      </div>
+          <div className="form-group">
+            <label>Apartment:</label>
+            <input
+              type="text"
+              name="apartment"
+              value={agentData.apartment || ""}
+              onChange={handleInputChange}
+            />
+          </div>
 
-      <div className="form-group">
-        <label>Pincode:</label>
-        <input
-          type="text"
-          name="pincode"
-          value={agentData.pincode || ''}
-          onChange={handleInputChange}
-        />
-      </div>
+          <div className="form-group">
+            <label>Pincode:</label>
+            <input
+              type="text"
+              name="pincode"
+              value={agentData.pincode || ""}
+              onChange={handleInputChange}
+            />
+          </div>
 
-      <button className="button activate" onClick={handleSave}>Save</button>
-    </div>
+          <button className="button activate" onClick={handleSave}>
+            Save
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 

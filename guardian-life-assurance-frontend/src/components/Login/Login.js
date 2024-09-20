@@ -49,6 +49,7 @@ const Login = ({ setRole }) => {
         localStorage.setItem("role", "employee");
         setRole("employee");
         navigate("/employee-dashboard");
+
       } else if (role === "ROLE_AGENT") {
         localStorage.setItem("role", "agent");
         setRole("agent");

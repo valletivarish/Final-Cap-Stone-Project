@@ -25,7 +25,7 @@ const ViewClaims = () => {
   const [sortDirection, setSortDirection] = useState(direction);
 
   const keysToBeIncluded = useMemo(() => [
-    "claimId", "policyNo", "claimAmount", "claimReason",
+    "claimId", "policyNo", ,"customerId","claimAmount", "claimReason",
     "claimDate", "status", "approvalDate", "rejectionDate"
   ], []);
 

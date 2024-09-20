@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { getAllPayments, downloadPaymentReport } from "../../services/gaurdianLifeAssuranceServices"; 
+import {
+  getAllPayments,
+  downloadPaymentReport,
+} from "../../services/gaurdianLifeAssuranceServices";
 import Table from "../../sharedComponents/Table/Table";
 import { useSearchParams } from "react-router-dom";
 import { showToastError } from "../../utils/toast/Toast";
 import { sanitizePaymentData } from "../../utils/helpers/SanitizeData";
-import './ViewPayments.css';
+import "./ViewPayments.css";
 import PdfDownloadButton from "../../sharedComponents/Button/PdfDownloadButton";
 import { verifyAdmin, verifyEmployee } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
@@ -15,23 +18,30 @@ const ViewPayments = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [error, setError] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
-  
+
   const page = parseInt(searchParams.get("page")) || 0;
   const size = parseInt(searchParams.get("size")) || 5;
   const sortBy = searchParams.get("sortBy") || "paymentId";
   const direction = searchParams.get("direction") || "asc";
 
-  const [minAmount, setMinAmount] = useState(searchParams.get("minAmount") || "");
-  const [maxAmount, setMaxAmount] = useState(searchParams.get("maxAmount") || "");
-  const [startDate, setStartDate] = useState(searchParams.get("startDate") || "");
+  const [minAmount, setMinAmount] = useState(
+    searchParams.get("minAmount") || ""
+  );
+  const [maxAmount, setMaxAmount] = useState(
+    searchParams.get("maxAmount") || ""
+  );
+  const [startDate, setStartDate] = useState(
+    searchParams.get("startDate") || ""
+  );
+  const [policyNo, setPolicyNo] = useState(searchParams.get("policyNo") || "");
   const [endDate, setEndDate] = useState(searchParams.get("endDate") || "");
   const [sortField, setSortField] = useState(sortBy);
   const [sortDirection, setSortDirection] = useState(direction);
 
-  const keysToBeIncluded =useMemo(()=>[
-    "paymentId", "policyNo", "amount", "paymentDate", 
-    "status", 
-  ],[]);
+  const keysToBeIncluded = useMemo(
+    () => ["paymentId", "policyNo", "amount", "paymentDate", "status"],
+    []
+  );
 
   useEffect(() => {
     const fetchRoleAndVerify = async () => {
@@ -63,10 +73,14 @@ const ViewPayments = () => {
           maxAmount,
           startDate,
           endDate,
+          policyNo
         };
 
         const response = await getAllPayments(params);
-        const sanitizedPayments = sanitizePaymentData(response, keysToBeIncluded);
+        const sanitizedPayments = sanitizePaymentData(
+          response,
+          keysToBeIncluded
+        );
         setPayments(sanitizedPayments);
       } catch (error) {
         setError("Failed to fetch payments");
@@ -75,7 +89,7 @@ const ViewPayments = () => {
     };
 
     fetchPayments();
-  }, [isVerified, searchParams, sortField, sortDirection, minAmount, maxAmount, startDate, endDate, page, size, keysToBeIncluded]);
+  }, [isVerified, searchParams]);
 
   const handleSearch = () => {
     const currentParams = new URLSearchParams(searchParams);
@@ -110,10 +124,20 @@ const ViewPayments = () => {
   };
 
   const handleDownloadReport = () => {
-    downloadPaymentReport(startDate, endDate);
+    downloadPaymentReport({
+      page,
+      size,
+      sortBy: sortField,
+      direction: sortDirection,
+      minAmount,
+      maxAmount,
+      startDate,
+      endDate,
+      policyNo
+    });
   };
-  if(error){
-    return <div>error</div>
+  if (error) {
+    return <div>error</div>;
   }
 
   return (
@@ -121,6 +145,19 @@ const ViewPayments = () => {
       <h1>View Payments</h1>
 
       <div className="view-payments-filters">
+        <input
+          type="number"
+          placeholder="Policy No"
+          value={policyNo}
+          onChange={(e) => {
+            const value = e.target.value;
+            setPolicyNo(value);
+            const currentParams = new URLSearchParams(searchParams);
+            if (value) currentParams.set("policyNo", value);
+            else currentParams.delete("policyNo");
+            setSearchParams(currentParams);
+          }}
+        />
         <input
           type="number"
           placeholder="Min Amount"

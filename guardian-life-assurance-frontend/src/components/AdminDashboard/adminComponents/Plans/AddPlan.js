@@ -42,8 +42,8 @@ const AddPlan = ({ setRefreshNavbar }) => {
       setPlanName("");
       setIsActive("");
     } catch (error) {
-      showToastError("Failed to add plan");
-      console.error(error);
+      console.log(error)
+      showToastError(error.message);
     }
   };
 

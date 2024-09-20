@@ -115,13 +115,14 @@ export const fetcByPolicyId = async (customerId, policyId) => {
 
 export const initiateInstallmentCheckout = async (
   customerId,
+  policyNo,
   installmentId,
   amount
 ) => {
   try {
     const token = getAuthToken();
     const response = await axios.post(
-      `http://localhost:8080/guardian-life-assurance/checkout/${customerId}/policies/installments/${installmentId}/sessions`,
+      `http://localhost:8080/guardian-life-assurance/checkout/customers/${customerId}/policies/${policyNo}/installments/${installmentId}/sessions`,
       {
         amount: amount,
       },
@@ -142,7 +143,7 @@ export const downloadReceipt = async (installmentId) => {
   try {
     const token = getAuthToken();
     const response = await axios.get(
-      `http://localhost:8080/guardian-life-assurance/customers/installments/receipt/${installmentId}`,
+      `http://localhost:8080/guardian-life-assurance/customers/installments/${installmentId}/receipt`,
       {
         responseType: "blob",
         headers: {
@@ -165,7 +166,7 @@ export const cancelPolicy = async (customerId, policyNo) => {
   try {
     const token = getAuthToken();
     const response = await axios.delete(
-      `http://localhost:8080/guardian-life-assurance/customers/${customerId}/policies/cancel/${policyNo}`,
+      `http://localhost:8080/guardian-life-assurance/customers/${customerId}/policies/${policyNo}/cancel`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

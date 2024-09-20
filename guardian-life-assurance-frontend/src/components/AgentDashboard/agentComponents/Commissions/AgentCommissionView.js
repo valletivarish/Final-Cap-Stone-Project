@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getAgentCommissions } from "../../../../services/agentServices";
 import { getCommissionTypes } from "../../../../services/gaurdianLifeAssuranceServices";
 import Table from "../../../../sharedComponents/Table/Table";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { debounce } from "../../../../utils/helpers/Debounce";
 import { showToastError } from "../../../../utils/toast/Toast";
 import "../../../Commissions/CommissionView.css";
 import { sanitizeCommissionData } from "../../../../utils/helpers/SanitizeData";
+import { verifyAgent } from "../../../../services/authServices";
 
 const AgentCommissionView = () => {
   const [commissions, setCommissions] = useState([]);
@@ -21,8 +22,27 @@ const AgentCommissionView = () => {
   const [commissionType, setCommissionType] = useState(searchParams.get("commissionType") || "");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const navigate=useNavigate();
+  const [isAgent, setIsAgent] = useState(false);
+  useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
 
   useEffect(() => {
+
     const fetchCommissionTypes = async () => {
       try {
         const response = await getCommissionTypes();
@@ -84,6 +104,9 @@ const AgentCommissionView = () => {
   };
 
   const fetchCommissions = async (params) => {
+    if(!isAgent){
+      return;
+    }
     try {
       const response = await getAgentCommissions(params);
       const sanitizedData = sanitizeCommissionData(response, [
@@ -114,7 +137,7 @@ const AgentCommissionView = () => {
       commissionType,
     };
     fetchCommissions(params);
-  }, [page, size, sortBy, direction, commissionType]);
+  }, [page, size, sortBy, direction, commissionType,isAgent]);
 
   if (error) {
     return <div>{error}</div>;

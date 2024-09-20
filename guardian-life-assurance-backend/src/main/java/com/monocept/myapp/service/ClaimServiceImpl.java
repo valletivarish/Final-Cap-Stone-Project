@@ -49,9 +49,6 @@ public class ClaimServiceImpl implements ClaimService {
 	private CustomerRepository customerRepository;
 
 	@Autowired
-	private StripeService stripeService;
-
-	@Autowired
 	private EmailService emailService;
 
 	@Autowired
@@ -59,7 +56,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 	@Autowired
 	private AgentRepository agentRepository;
-	
+
 	@Autowired
 	private InstallmentRepository installmentRepository;
 
@@ -97,7 +94,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 		List<Claim> claims = claimRepository.findByCustomer(customer);
 
-		return claims.stream().map(this::convertEntityToDto).collect(Collectors.toList());
+		return claims.stream().map(claim->convertEntityToDto(claim)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -110,13 +107,6 @@ public class ClaimServiceImpl implements ClaimService {
 		}
 
 		PolicyAccount policyAccount = claim.getPolicyAccount();
-		double sumAssured = policyAccount.getSumAssured();
-
-//		String stripeToken = claim.getCustomer().getStripeToken();
-//		if (stripeToken == null || stripeToken.isEmpty()) {
-//			throw new GuardianLifeAssuranceApiException(HttpStatus.BAD_REQUEST,
-//					"No Bank details avialable for the customer " + claim.getCustomer().getCustomerId());
-//		}
 		policyAccount.setStatus(PolicyStatus.CLAIMED);
 		List<Installment> unpaidInstallments = installmentRepository.findByInsurancePolicyAndStatus(policyAccount,
 				InstallmentStatus.PENDING);
@@ -156,7 +146,7 @@ public class ClaimServiceImpl implements ClaimService {
 		PageRequest pageRequest = PageRequest.of(page, size, sort);
 
 		Page<Claim> claims = claimRepository.findAllWithFilters(status, customerId, policyNo, pageRequest);
-		List<ClaimResponseDto> claimResponseDtos = claims.getContent().stream().map(this::convertEntityToDto)
+		List<ClaimResponseDto> claimResponseDtos = claims.getContent().stream().map(claim->convertEntityToDto(claim))
 				.collect(Collectors.toList());
 
 		return new PagedResponse<>(claimResponseDtos, claims.getNumber(), claims.getSize(), claims.getTotalElements(),
@@ -173,6 +163,7 @@ public class ClaimServiceImpl implements ClaimService {
 		dto.setApprovalDate(claim.getApprovalDate());
 		dto.setRejectionDate(claim.getRejectionDate());
 		dto.setClaimDate(claim.getClaimDate());
+		dto.setCustomerId(claim.getCustomer().getCustomerId());
 		return dto;
 	}
 
@@ -186,7 +177,7 @@ public class ClaimServiceImpl implements ClaimService {
 		Page<Claim> claimsPage = claimRepository.findClaimsByAgentId(getAgentFromSecurityContext().getAgentId(),
 				pageRequest);
 
-		List<ClaimResponseDto> claims = claimsPage.getContent().stream().map(this::convertEntityToDto)
+		List<ClaimResponseDto> claims = claimsPage.getContent().stream().map(claim->convertEntityToDto(claim))
 				.collect(Collectors.toList());
 
 		return new PagedResponse<>(claims, claimsPage.getNumber(), claimsPage.getSize(), claimsPage.getTotalElements(),
@@ -197,15 +188,12 @@ public class ClaimServiceImpl implements ClaimService {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-			
-			return agentRepository.findByUser(
-				    userRepository.findByUsernameOrEmail(
-				        userDetails.getUsername(), 
-				        userDetails.getUsername()
-				    ).orElseThrow(() -> new GuardianLifeAssuranceException.UserNotFoundException("User not found"))
-				);
+
+			return agentRepository.findByUser(userRepository
+					.findByUsernameOrEmail(userDetails.getUsername(), userDetails.getUsername())
+					.orElseThrow(() -> new GuardianLifeAssuranceException.UserNotFoundException("User not found")));
 		}
 		throw new GuardianLifeAssuranceException.UserNotFoundException("agent not found");
 
-}
+	}
 }

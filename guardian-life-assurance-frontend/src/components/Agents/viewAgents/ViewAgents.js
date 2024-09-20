@@ -9,6 +9,7 @@ import "./ViewAgents.css";
 import PdfDownloadButton from "../../../sharedComponents/Button/PdfDownloadButton";
 import { Helper } from "../../../utils/helpers/Helper";
 import { verifyAdmin, verifyEmployee } from "../../../services/authServices";
+import { getStateCount } from "../../../services/stateAndCityManagementService";
 
 const ViewAgents = () => {
   const [agents, setAgents] = useState({});
@@ -48,7 +49,8 @@ const ViewAgents = () => {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const statesData = await getAllStates();
+        const count=await getStateCount();
+        const statesData = await getAllStates({size:count});
         setStates(statesData.content);
       } catch (error) {
         setError(error.message);
@@ -139,6 +141,9 @@ const ViewAgents = () => {
   if (error) {
     return <div>{error}</div>;
   }
+  const handleReset=()=>{
+    setSearchParams({});
+  }
 
   return (
     <>
@@ -165,6 +170,7 @@ const ViewAgents = () => {
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
               </select>
+              <button onClick={handleReset} style={{backgroundColor: "#6c757d"}}>Reset</button>
             </div>
             <PdfDownloadButton action={handleDownloadReport} />
             <Table data={agents || []} searchParams={searchParams} setSearchParams={setSearchParams} paginationData={agents} />

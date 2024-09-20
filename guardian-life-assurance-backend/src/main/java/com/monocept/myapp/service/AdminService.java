@@ -1,5 +1,7 @@
 package com.monocept.myapp.service;
 
+import java.util.Map;
+
 import com.monocept.myapp.dto.AdminRequestDto;
 import com.monocept.myapp.dto.AdminResponseDto;
 import com.monocept.myapp.util.PagedResponse;
@@ -23,6 +25,8 @@ public interface AdminService {
 	AdminResponseDto getAdmin(long adminId);
 
 	AdminResponseDto getAdminByUsername();
+
+	Map<String, Object> getUserByEmail(String currentUserEmail);
 
 	
 

@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getAgentCommissionWithdrawals } from "../../../../services/agentServices";
 import { getWithdrawalStatus } from "../../../../services/gaurdianLifeAssuranceServices";
 import Table from "../../../../sharedComponents/Table/Table";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { debounce } from "../../../../utils/helpers/Debounce";
 import { showToastError, showToastSuccess } from "../../../../utils/toast/Toast";
 import "../../../Commissions/CommissionWithdrawals.css";
 import { sanitizeAgentWithdrawalData } from "../../../../utils/helpers/SanitizeData";
+import { verifyAgent } from "../../../../services/authServices";
 
 
 const AgentCommissionWithdrawals = () => {
@@ -22,6 +23,25 @@ const AgentCommissionWithdrawals = () => {
   const [status, setStatus] = useState(searchParams.get("status") || "");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+
+  const navigate=useNavigate();
+  const [isAgent, setIsAgent] = useState(false);
+  useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
 
   useEffect(() => {
     const fetchStatuses = async () => {
@@ -81,6 +101,9 @@ const AgentCommissionWithdrawals = () => {
 
   const fetchWithdrawals = async (params) => {
     try {
+      if(!isAgent){
+        return;
+      }
       const response = await getAgentCommissionWithdrawals(params);
       if (response) {
         const sanitizedWithdrawals = sanitizeAgentWithdrawalData(response, [
@@ -112,7 +135,7 @@ const AgentCommissionWithdrawals = () => {
       status,
     };
     fetchWithdrawals(params);
-  }, [page, size, sortBy, direction, status]);
+  }, [page, size, sortBy, direction, status,isAgent]);
 
   if (error) {
     return <div>{error}</div>;

@@ -42,7 +42,7 @@ export const approveDocument = async (documentId) => {
   try {
     const token = getAuthToken();
     const response = await axios.put(
-      `http://localhost:8080/guardian-life-assurance/employees/documents/${documentId}/approve`,
+      `http://localhost:8080/guardian-life-assurance/employees/documents/${documentId}/approval`,
       {},
       {
         headers: {
@@ -62,7 +62,7 @@ export const rejectDocument = async (documentId) => {
   try {
     const token = getAuthToken();
     const response = await axios.put(
-      `http://localhost:8080/guardian-life-assurance/employees/documents/${documentId}/reject`,
+      `http://localhost:8080/guardian-life-assurance/employees/documents/${documentId}/rejection`,
       {},
       {
         headers: {
@@ -154,6 +154,27 @@ export const downloadDocument = async (documentId) => {
     link.click();
     link.remove();
 
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const verifyDocuments = async (customerId, schemeId) => {
+  try {
+    const token = getAuthToken();
+    const response = await axios.get(
+      `http://localhost:8080/guardian-life-assurance/customers/documents-verification`,
+      {
+        params: {
+          customerId: customerId,
+          schemeId: schemeId,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     handleApiError(error);

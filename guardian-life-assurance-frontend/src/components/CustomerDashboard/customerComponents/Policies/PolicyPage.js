@@ -5,6 +5,7 @@ import { sanitizeCustomerPolicyData } from "../../../../utils/helpers/SanitizeDa
 import Table from "../../../../sharedComponents/Table/Table"; 
 import { useNavigate } from "react-router-dom";
 import './PolicyPage.css'
+import { verifyCustomer } from "../../../../services/authServices";
 
 const PolicyPage = () => {
   const { customerId,policyId } = useParams(); 
@@ -16,9 +17,28 @@ const PolicyPage = () => {
   const sortBy = searchParams.get("sortBy") || "policyNo";
   const direction = searchParams.get("direction") || "asc";
 
+  const [isCustomer, setIsCustomer] = useState(false);
+
+  useEffect(() => {
+    const verifyCustomerAndNavigate = async () => {
+      try {
+        const response = await verifyCustomer();
+        if (!response) {
+          navigate("/login");
+          return;
+        } else {
+          setIsCustomer(true);
+        }
+      } catch (error) {
+        navigate("/login");
+      }
+    };
+    verifyCustomerAndNavigate();
+  }, []);
+
   const handleShowMore = (policyNo) => {
     console.log(`Show more details for policy: ${policyNo}`);
-    navigate(`/customer/${customerId}/policies/${policyNo}`);
+    navigate(`/customer-dashboard/${customerId}/policies/${policyNo}`);
 
   };
 
@@ -52,7 +72,7 @@ const PolicyPage = () => {
   }, [customerId,page,size,sortBy,direction]);
 
   return (
-    <div className="policy-page-container">
+    <div className="view-policies-container">
       <h1 className="policy-page-header">Policy List</h1>
       {policyData ? (
         <div className="table-container">

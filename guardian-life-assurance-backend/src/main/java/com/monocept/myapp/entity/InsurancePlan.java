@@ -23,11 +23,11 @@ public class InsurancePlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long planId;
 
-    @Column(name = "planName")
+    @Column(name = "planName", unique = true)
     @NotEmpty(message = "Plan name is required")
     private String planName;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "insurancePlan", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
     private List<InsuranceScheme> scheme;
 
     @Column(name = "status")

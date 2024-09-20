@@ -51,7 +51,8 @@ const ViewStates = () => {
         const response=await activateState(stateId);
         showToastSuccess(response);
       }
-      const response = await getAllStates();
+      setSearchParams({})
+      const response = await getAllStates({size:5,page:0});
       if (response && response.content) {
         const sanitized = sanitizeStateData(
           response, 
@@ -98,7 +99,7 @@ const ViewStates = () => {
     }
   };
   const getRoleLink = (link = "") => {
-    return Helper.getRoleLink(localStorage.getItem("role"), null, link);
+    return Helper.getRoleLink(Helper.getStoredRole(), null, link);
   };
 
   const handleEdit = (stateId) => {
