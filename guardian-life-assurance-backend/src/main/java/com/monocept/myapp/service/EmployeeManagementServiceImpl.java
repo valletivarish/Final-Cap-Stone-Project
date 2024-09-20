@@ -1,7 +1,9 @@
 package com.monocept.myapp.service;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -213,6 +215,16 @@ public class EmployeeManagementServiceImpl implements EmployeeManagementService 
 			return userDetails.getUsername();
 		}
 		return null;
+	}
+
+	@Override
+	public Map<String, Object> getUserByEmail(String currentUserEmail) {
+		User user = userRepository.findByUsernameOrEmail(currentUserEmail, currentUserEmail).orElseThrow(()->new GuardianLifeAssuranceException.UserNotFoundException("User Not found"));
+		Employee employee = employeeRepository.findByUser(user);
+		System.out.println(employee);
+		Map<String, Object> userDetails = new HashMap<>();
+		userDetails.put("fullName", employee.getFirstName()+" "+employee.getLastName());
+		return userDetails;
 	}
 
 

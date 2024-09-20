@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Entity
@@ -21,8 +22,9 @@ public class Admin {
     @Column
     private long adminId;
     
+    @Column(name = "name")
+    @NotEmpty(message = "Name is required")
     private String name;
-    
 
     @Column
     private boolean active = true;

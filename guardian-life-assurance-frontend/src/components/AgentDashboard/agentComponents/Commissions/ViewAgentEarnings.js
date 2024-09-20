@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { getAgentEarnings } from "../../../../services/agentServices";
 import Table from "../../../../sharedComponents/Table/Table";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { showToastError } from "../../../../utils/toast/Toast";
 import { sanitizeAgentEarningsData } from "../../../../utils/helpers/SanitizeData";
-import './ViewAgentEarnings.css'
+import "./ViewAgentEarnings.css";
+import { verifyAgent } from "../../../../services/authServices";
 const ViewAgentEarnings = () => {
   const [earnings, setEarnings] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,16 +13,46 @@ const ViewAgentEarnings = () => {
 
   const page = parseInt(searchParams.get("page")) || 0;
   const size = parseInt(searchParams.get("size")) || 10;
-  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "withdrawalDate");
-  const [direction, setDirection] = useState(searchParams.get("direction") || "ASC");
-  const [minAmount, setMinAmount] = useState(searchParams.get("minAmount") || "");
-  const [maxAmount, setMaxAmount] = useState(searchParams.get("maxAmount") || "");
+  const [sortBy, setSortBy] = useState(
+    searchParams.get("sortBy") || "withdrawalDate"
+  );
+  const [direction, setDirection] = useState(
+    searchParams.get("direction") || "ASC"
+  );
+  const [minAmount, setMinAmount] = useState(
+    searchParams.get("minAmount") || ""
+  );
+  const [maxAmount, setMaxAmount] = useState(
+    searchParams.get("maxAmount") || ""
+  );
   const [fromDate, setFromDate] = useState(searchParams.get("fromDate") || "");
   const [toDate, setToDate] = useState(searchParams.get("toDate") || "");
 
   const keysToBeIncluded = ["id", "amount", "withdrawalDate"];
 
+  const navigate = useNavigate();
+  const [isAgent, setIsAgent] = useState(false);
   useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
+
+  useEffect(() => {
+    if (!isAgent) {
+      return;
+    }
     const fetchEarnings = async () => {
       try {
         const params = {
@@ -35,7 +66,10 @@ const ViewAgentEarnings = () => {
           toDate,
         };
         const response = await getAgentEarnings(params);
-        const sanitizedEarnings = sanitizeAgentEarningsData(response, keysToBeIncluded);
+        const sanitizedEarnings = sanitizeAgentEarningsData(
+          response,
+          keysToBeIncluded
+        );
         setEarnings(sanitizedEarnings);
       } catch (error) {
         setError("Failed to fetch agent earnings");
@@ -44,7 +78,7 @@ const ViewAgentEarnings = () => {
     };
 
     fetchEarnings();
-  }, [searchParams]);
+  }, [searchParams, isAgent]);
 
   const handleSearch = () => {
     setSearchParams({
@@ -80,13 +114,31 @@ const ViewAgentEarnings = () => {
           type="number"
           placeholder="Min Amount"
           value={minAmount}
-          onChange={(e) => setMinAmount(e.target.value)}
+          onChange={(e) => {
+            const currentSearchParams = Object.fromEntries(searchParams);
+            if (e.target.value !== "") {
+              currentSearchParams.minAmount = e.target.value;
+            } else {
+              delete currentSearchParams.minAmount;
+            }
+            setSearchParams(currentSearchParams);
+            setMinAmount(e.target.value);
+          }}
         />
         <input
           type="number"
           placeholder="Max Amount"
           value={maxAmount}
-          onChange={(e) => setMaxAmount(e.target.value)}
+          onChange={(e) => {
+            const currentSearchParams = Object.fromEntries(searchParams);
+            if (e.target.value !== "") {
+              currentSearchParams.maxAmount = e.target.value;
+            } else {
+              delete currentSearchParams.maxAmount;
+            }
+            setSearchParams(currentSearchParams);
+            setMaxAmount(e.target.value);
+          }}
         />
         <input
           type="date"
@@ -104,7 +156,10 @@ const ViewAgentEarnings = () => {
           <option value="withdrawalDate">Withdrawal Date</option>
           <option value="amount">Amount</option>
         </select>
-        <select value={direction} onChange={(e) => setDirection(e.target.value)}>
+        <select
+          value={direction}
+          onChange={(e) => setDirection(e.target.value)}
+        >
           <option value="ASC">Ascending</option>
           <option value="DESC">Descending</option>
         </select>
@@ -112,7 +167,11 @@ const ViewAgentEarnings = () => {
         <button onClick={handleReset}>Reset</button>
       </div>
 
-      <Table data={earnings} searchParams={searchParams} setSearchParams={setSearchParams} />
+      <Table
+        data={earnings}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
     </div>
   );
 };

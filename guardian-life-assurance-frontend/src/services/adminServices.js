@@ -171,3 +171,20 @@ export const getAdminDetails = async () => {
     handleApiError(error);
   }
 };
+export const getAdminName = async () => {
+  try {
+    const token = getAuthToken();
+    const response = await axios.get(
+      `http://localhost:8080/guardian-life-assurance/admins/details`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};

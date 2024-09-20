@@ -1,5 +1,7 @@
 package com.monocept.myapp.service;
 
+import java.util.Map;
+
 import com.monocept.myapp.dto.EmployeeRequestDto;
 import com.monocept.myapp.dto.EmployeeResponseDto;
 import com.monocept.myapp.util.PagedResponse;
@@ -21,5 +23,7 @@ public interface EmployeeManagementService {
 	String rejectDocument(int documentId);
 
 	EmployeeResponseDto getEmployeeProfile();
+
+	Map<String, Object> getUserByEmail(String currentUserEmail);
 
 }

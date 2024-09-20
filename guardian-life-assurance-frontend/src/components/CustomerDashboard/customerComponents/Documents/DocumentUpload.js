@@ -1,20 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { getDocumentTypes, uploadDocument, getAllCustomerDocuments, downloadDocument } from '../../../../services/documentServices';
-import { useParams } from 'react-router-dom';
-import './DocumentUpload.css';
-import { showToastSuccess, showToastError } from '../../../../utils/toast/Toast';
+import React, { useState, useEffect } from "react";
+import {
+  getDocumentTypes,
+  uploadDocument,
+  getAllCustomerDocuments,
+  downloadDocument,
+} from "../../../../services/documentServices";
+import { useNavigate, useParams } from "react-router-dom";
+import "./DocumentUpload.css";
+import {
+  showToastSuccess,
+  showToastError,
+} from "../../../../utils/toast/Toast";
+import { verifyCustomer } from "../../../../services/authServices";
 
 const DocumentUpload = () => {
   const { customerId } = useParams();
   const [documentTypes, setDocumentTypes] = useState([]);
   const [uploadedDocuments, setUploadedDocuments] = useState([]);
-  const [selectedDocumentType, setSelectedDocumentType] = useState('');
+  const [selectedDocumentType, setSelectedDocumentType] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
+  const navigate = useNavigate();
+  const [isCustomer, setIsCustomer] = useState(false);
+
+  const verifyCustomerAndNavigate = async () => {
+    try {
+      const response = await verifyCustomer();
+      if (!response) {
+        navigate("/login");
+      } else {
+        setIsCustomer(true);
+      }
+    } catch (error) {
+      navigate("/login");
+    }
+  };
+
   useEffect(() => {
+    verifyCustomerAndNavigate();
+    if(!isCustomer){
+      return;
+    }
     fetchDocumentTypes();
     fetchUploadedDocuments();
-  }, []);
+  }, [isCustomer]);
 
   const fetchDocumentTypes = async () => {
     try {
@@ -49,11 +78,15 @@ const DocumentUpload = () => {
     }
 
     try {
-      await uploadDocument(customerId, selectedFile, selectedDocumentType);
-      showToastSuccess("Document uploaded successfully.");
+      const response = await uploadDocument(
+        customerId,
+        selectedFile,
+        selectedDocumentType
+      );
+      showToastSuccess(response);
       fetchUploadedDocuments();
     } catch (error) {
-      showToastError("Failed to upload document.");
+      showToastError(error.message);
     }
   };
 
@@ -69,19 +102,25 @@ const DocumentUpload = () => {
   const sanitizeDocumentType = (type) => {
     return type
       .toLowerCase()
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
-  const hasNotVerifiedDocuments = uploadedDocuments.some(doc => !doc.verified);
+  const hasNotVerifiedDocuments = uploadedDocuments.some(
+    (doc) => !doc.verified
+  );
 
   return (
     <div className="document-upload-container">
       <h2 className="document-upload-header">Upload Document</h2>
       <div className="document-upload-form-group">
         <label className="document-upload-label">Document Type</label>
-        <select value={selectedDocumentType} onChange={handleDocumentTypeChange} className="document-upload-select">
+        <select
+          value={selectedDocumentType}
+          onChange={handleDocumentTypeChange}
+          className="document-upload-select"
+        >
           <option value="">-- Select Document Type --</option>
           {documentTypes.map((type) => (
             <option key={type} value={type}>
@@ -93,7 +132,11 @@ const DocumentUpload = () => {
 
       <div className="document-upload-form-group">
         <label className="document-upload-label">Upload Document</label>
-        <input type="file" onChange={handleFileChange} className="document-upload-input" />
+        <input
+          type="file"
+          onChange={handleFileChange}
+          className="document-upload-input"
+        />
       </div>
 
       <button className="document-upload-button" onClick={handleUpload}>
@@ -105,23 +148,35 @@ const DocumentUpload = () => {
         <div className="document-upload-list">
           {uploadedDocuments.map((doc) => (
             <div key={doc.documentId} className="document-upload-row">
-              <span className="document-upload-name">{sanitizeDocumentType(doc.documentName)}</span>
-              <span className="document-upload-status">
-                {doc.verified ? "Verified" : (doc.verifiedBy ? "Not Verified" : "Pending")}
+              <span className="document-upload-name">
+                {sanitizeDocumentType(doc.documentName)}
               </span>
-              <button className="document-upload-download-button" onClick={() => handleDownload(doc.documentId)}>
+              <span className="document-upload-status">
+                {doc.verified
+                  ? "Verified"
+                  : doc.verifiedBy
+                  ? "Not Verified"
+                  : "Pending"}
+              </span>
+              <button
+                className="document-upload-download-button"
+                onClick={() => handleDownload(doc.documentId)}
+              >
                 Download
               </button>
             </div>
           ))}
         </div>
       ) : (
-        <p className="document-upload-no-documents">No documents uploaded yet.</p>
+        <p className="document-upload-no-documents">
+          No documents uploaded yet.
+        </p>
       )}
 
       {hasNotVerifiedDocuments && (
         <p className="document-upload-reupload-message">
-          Please re-upload the documents that are not verified to get them approved.
+          Please re-upload the documents that are not verified to get them
+          approved.
         </p>
       )}
     </div>

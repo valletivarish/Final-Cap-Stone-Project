@@ -18,13 +18,11 @@ public interface CommissionRepository extends JpaRepository<Commission, Long> {
             + "(:agentId IS NULL OR c.agent.agentId = :agentId) AND "
             + "(:commissionType IS NULL OR c.commissionType = :commissionType) AND "
             + "(:fromDate IS NULL OR c.issueDate >= :fromDate) AND "
-            + "(:toDate IS NULL OR c.issueDate <= :toDate) AND "
-            + "(:amount IS NULL OR c.amount = :amount)")
+            + "(:toDate IS NULL OR c.issueDate <= :toDate)")
     Page<Commission> findAllCommissions(@Param("agentId") Long agentId,
                                         @Param("commissionType") CommissionType commissionType,
                                         @Param("fromDate") LocalDate from,
                                         @Param("toDate") LocalDate to,
-                                        @Param("amount") Double amount,
                                         Pageable pageable);
 
 }

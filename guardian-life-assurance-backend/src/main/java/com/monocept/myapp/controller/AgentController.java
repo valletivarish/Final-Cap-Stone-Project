@@ -152,11 +152,10 @@ public class AgentController {
 			@RequestParam(name = "agentId", required = false) Long agentId,
 			@RequestParam(name = "commissionType", required = false) CommissionType commissionType,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
-			@RequestParam(name = "toDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
-			@RequestParam(name = "amount", required = false) Double amount) {
+			@RequestParam(name = "toDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to) {
 
 		PagedResponse<CommissionResponseDto> commissions = commissionService.getCommissionsWithFilters(page, size,
-				sortBy, direction, commissionType, from, to, amount);
+				sortBy, direction, commissionType, from, to); 
 
 		return new ResponseEntity<>(commissions, HttpStatus.OK);
 	}

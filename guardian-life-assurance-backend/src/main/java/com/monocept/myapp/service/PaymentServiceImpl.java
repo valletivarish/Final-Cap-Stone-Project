@@ -2,7 +2,6 @@ package com.monocept.myapp.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,11 +18,9 @@ import org.springframework.stereotype.Service;
 import com.monocept.myapp.dto.PaymentResponseDto;
 import com.monocept.myapp.entity.Agent;
 import com.monocept.myapp.entity.Payment;
-import com.monocept.myapp.entity.PolicyAccount;
 import com.monocept.myapp.exception.GuardianLifeAssuranceException;
 import com.monocept.myapp.repository.AgentRepository;
 import com.monocept.myapp.repository.PaymentRepository;
-import com.monocept.myapp.repository.PolicyRepository;
 import com.monocept.myapp.repository.UserRepository;
 import com.monocept.myapp.util.PagedResponse;
 
@@ -44,14 +41,14 @@ public class PaymentServiceImpl implements PaymentService{
     @Override
     public PagedResponse<PaymentResponseDto> getAllPaymentsWithFilters(int page, int size, String sortBy, String direction,
                                                                        Double minAmount, Double maxAmount,
-                                                                       LocalDateTime startDate, LocalDateTime endDate, String customerId, Long paymentId) {
+                                                                       LocalDateTime startDate, LocalDateTime endDate, Long policyNo) {
 
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Payment> paymentsPage = paymentRepository.findByFilters(minAmount, maxAmount, startDate, endDate, customerId, paymentId, pageable);
+        Page<Payment> paymentsPage = paymentRepository.findByFilters(minAmount, maxAmount, startDate, endDate, policyNo, pageable);
 
         List<PaymentResponseDto> paymentDtos = paymentsPage.getContent().stream()
                 .map(payment->convertPaymentToPaymentResponseDto(payment))
@@ -86,7 +83,7 @@ public class PaymentServiceImpl implements PaymentService{
 
 
         List<PaymentResponseDto> paymentDtos = paymentPage.getContent().stream()
-                .map(this::convertPaymentToPaymentResponseDto)
+                .map(payment->convertPaymentToPaymentResponseDto(payment))
                 .collect(Collectors.toList());
         System.out.println(paymentDtos);
         return new PagedResponse<>(paymentDtos, paymentPage.getNumber(), paymentPage.getSize(), paymentPage.getTotalElements(), paymentPage.getTotalPages(), paymentPage.isLast());

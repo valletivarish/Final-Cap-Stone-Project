@@ -200,6 +200,8 @@ const CustomerRegistration = () => {
             <option key={index} value={city.id}>{city.city}</option>
         ));
     };
+    const getCurrentDate = () => new Date().toISOString().split('T')[0];
+
 
     return (
         <Container className="registration-container">
@@ -249,6 +251,7 @@ const CustomerRegistration = () => {
                                     className="registration-input"
                                     value={dateOfBirth}
                                     onChange={(e) => handleFieldChange('dateOfBirth', e.target.value)}
+                                    max={getCurrentDate()}
                                     isInvalid={errors.dateOfBirth ? true : false}
                                 />
                                 <Form.Control.Feedback type="invalid">

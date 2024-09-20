@@ -24,7 +24,7 @@ public class InsuranceSchemeResponseDto {
     private int minAge;
     private Integer maxAge;
     private Double profitRatio;
-    private Double registrationCommRatio;
+    private Double registrationCommAmount;
     private Double installmentCommRatio;
 
 

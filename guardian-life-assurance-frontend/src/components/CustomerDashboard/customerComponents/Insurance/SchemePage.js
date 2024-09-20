@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   fetchSchemesByPlanId,
   fetchSchemeImage,
@@ -8,8 +8,11 @@ import {
 import { fetchCustomerAge } from "../../../../services/customerServices";
 import { initiateCheckout } from "../../../../services/insuranceManagementServices";
 import "./SchemePage.css";
+import { verifyDocuments } from "../../../../services/documentServices";
 import { showToastError } from "../../../../utils/toast/Toast";
 import { useSearchParams } from "react-router-dom";
+import validator from "validator";
+import { verifyCustomer } from "../../../../services/authServices";
 
 const SchemePage = () => {
   const { planId } = useParams();
@@ -20,7 +23,7 @@ const SchemePage = () => {
   const [images, setImages] = useState({});
   const [age, setAge] = useState(null);
   const [searchParams] = useSearchParams();
-  const agentId = searchParams.get('AgentID');
+  const agentId = searchParams.get("AgentID");
   const [errorMessage, setErrorMessage] = useState("");
   const [numYears, setNumYears] = useState(1);
   const [investmentAmount, setInvestmentAmount] = useState(0);
@@ -28,24 +31,58 @@ const SchemePage = () => {
   const [calculatedInstallment, setCalculatedInstallment] = useState(null);
   const [premiumType, setPremiumType] = useState("MONTHLY");
   const { customerId } = useParams();
+  const [unverifiedDocuments, setUnverifiedDocuments] = useState([]);
+
+  const navigate = useNavigate();
+  const [isCustomer, setIsCustomer] = useState(false);
 
   useEffect(() => {
-    fetchCustomerDetails();
+    const verifyCustomerAndNavigate = async () => {
+      try {
+        const response = await verifyCustomer();
+        if (!response) {
+          navigate("/login");
+          return;
+        } else {
+          setIsCustomer(true);
+        }
+      } catch (error) {
+        navigate("/login");
+      }
+    };
+    verifyCustomerAndNavigate();
   }, []);
+
+  useEffect(() => {
+    if(!isCustomer){
+      return;
+    }
+    fetchCustomerDetails();
+  }, [isCustomer]);
 
   const fetchCustomerDetails = async () => {
     try {
       const customerAge = await fetchCustomerAge();
       setAge(customerAge);
       fetchSchemes();
+      await checkDocumentsVerification();
     } catch (error) {
       setErrorMessage("Failed to fetch customer details");
+    }
+  };
+  const checkDocumentsVerification = async () => {
+    try {
+      const documents = await verifyDocuments(customerId, planId);
+      setUnverifiedDocuments(documents);
+    } catch (error) {
+      setErrorMessage("Failed to verify documents");
     }
   };
 
   const fetchSchemes = async () => {
     setLoading(true);
     try {
+      
       const schemeData = await fetchSchemesByPlanId(planId, currentPage, 1);
       setSchemes(schemeData.content);
       setTotalPages(schemeData.totalPages);
@@ -66,12 +103,15 @@ const SchemePage = () => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchSchemes();
-  },[planId])
+  }, [planId]);
 
   const handleCalculate = async (schemeId) => {
     try {
+      if(!validator.isDecimal(investmentAmount,{decimal_digits:'0,2'})){
+        showToastError("Please enter a valid number with up to two decimal places.");
+      }
       const interestData = await calculateInterest({
         schemeId,
         years: numYears,
@@ -89,11 +129,13 @@ const SchemePage = () => {
       insuranceSchemeId: scheme.schemeId,
       premiumType: premiumType,
       policyTerm: numYears,
-      amount:calculatedInstallment.installmentAmount,
-      premiumAmount:calculatedInstallment.assuredAmount-calculatedInstallment.interestAmount,
-      assuredAmount:calculatedInstallment.assuredAmount,
+      amount: calculatedInstallment.installmentAmount,
+      premiumAmount:
+        calculatedInstallment.assuredAmount -
+        calculatedInstallment.interestAmount,
+      assuredAmount: calculatedInstallment.assuredAmount,
       customerId,
-      agentId: agentId ? agentId : 0
+      agentId: agentId ? agentId : 0,
     };
 
     try {
@@ -121,6 +163,13 @@ const SchemePage = () => {
       fetchSchemes();
     }
   };
+  const sanitizeString = (str) => {
+    return str
+        .toLowerCase()
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+};
 
   return (
     <div className="scheme-page">
@@ -135,9 +184,11 @@ const SchemePage = () => {
                 <img src={images[scheme.schemeId]} alt={scheme.schemeName} />
               </div>
             )}
-            
+
             <div className="scheme-description">
-              <div dangerouslySetInnerHTML={{ __html: scheme.detailDescription }} />
+              <div
+                dangerouslySetInnerHTML={{ __html: scheme.detailDescription }}
+              />
             </div>
             <table className="scheme-table">
               <tbody>
@@ -169,10 +220,23 @@ const SchemePage = () => {
             </table>
             {!isEligible(scheme) && (
               <p className="eligibility-message">
-                You are not eligible for this scheme based on the age requirement.
+                You are not eligible for this scheme based on the age
+                requirement.
               </p>
             )}
-            {isEligible(scheme) && (
+            {isEligible(scheme) && unverifiedDocuments.length > 0 && (
+              <div className="documents-message">
+                <p>
+                  The following documents are required and not yet verified:
+                </p>
+                <ul>
+                  {unverifiedDocuments.map((doc, index) => (
+                    <li key={index}>{sanitizeString(doc)}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {isEligible(scheme) && unverifiedDocuments.length === 0 && (
               <div className="investment-inputs">
                 <table>
                   <tbody>
@@ -231,7 +295,10 @@ const SchemePage = () => {
                     </tr>
                     <tr>
                       <td colSpan="2" className="calculate-button">
-                        <button className="button edit" onClick={() => handleCalculate(scheme.schemeId)}>
+                        <button
+                          className="button edit"
+                          onClick={() => handleCalculate(scheme.schemeId)}
+                        >
                           Calculate Installment
                         </button>
                       </td>
@@ -252,19 +319,29 @@ const SchemePage = () => {
                         </tr>
                         <tr>
                           <td>Installment Amount:</td>
-                          <td>₹{calculatedInstallment.installmentAmount.toFixed(2)}</td>
+                          <td>
+                            ₹
+                            {calculatedInstallment.installmentAmount.toFixed(2)}
+                          </td>
                         </tr>
                         <tr>
                           <td>Interest Amount:</td>
-                          <td>₹{calculatedInstallment.interestAmount.toFixed(2)}</td>
+                          <td>
+                            ₹{calculatedInstallment.interestAmount.toFixed(2)}
+                          </td>
                         </tr>
                         <tr>
                           <td>Assured Amount:</td>
-                          <td>₹{calculatedInstallment.assuredAmount.toFixed(2)}</td>
+                          <td>
+                            ₹{calculatedInstallment.assuredAmount.toFixed(2)}
+                          </td>
                         </tr>
                       </tbody>
                     </table>
-                    <button className="button proceed" onClick={() => handleCheckout(scheme)}>
+                    <button
+                      className="button proceed"
+                      onClick={() => handleCheckout(scheme)}
+                    >
                       Proceed to Checkout
                     </button>
                   </div>
@@ -277,7 +354,10 @@ const SchemePage = () => {
         <button onClick={handlePreviousPage} disabled={currentPage === 0}>
           Previous
         </button>
-        <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage >= totalPages - 1}
+        >
           Next
         </button>
       </div>

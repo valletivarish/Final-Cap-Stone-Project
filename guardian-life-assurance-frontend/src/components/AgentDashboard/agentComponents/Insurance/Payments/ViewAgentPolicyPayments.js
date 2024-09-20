@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { getAgentPolicyPayments } from "../../../../../services/agentServices"; 
 import Table from "../../../../../sharedComponents/Table/Table";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { showToastError } from "../../../../../utils/toast/Toast";
 import { sanitizePaymentData } from "../../../../../utils/helpers/SanitizeData";
 import '../../../../Policies/ViewPayments.css';
+import { verifyAgent } from "../../../../../services/authServices";
 
 
 const ViewAgentPoliciesPayments = () => {
@@ -27,7 +28,29 @@ const ViewAgentPoliciesPayments = () => {
     "status",
   ];
 
+  const [isAgent, setIsAgent] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
+
+  useEffect(() => {
+    if(!isAgent){
+      return;
+    }
     const fetchPayments = async () => {
       try {
         const params = {
@@ -49,7 +72,7 @@ const ViewAgentPoliciesPayments = () => {
     };
 
     fetchPayments();
-  }, [searchParams]);
+  }, [searchParams,isAgent]);
 
   const handleSearch = () => {
     const currentParams = new URLSearchParams(searchParams);

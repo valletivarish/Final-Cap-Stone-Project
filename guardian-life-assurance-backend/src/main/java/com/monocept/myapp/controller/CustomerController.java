@@ -3,6 +3,7 @@ package com.monocept.myapp.controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -123,11 +124,13 @@ public class CustomerController {
 			@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "5") int size,
 			@RequestParam(name = "sortBy", defaultValue = "queryId") String sortBy,
-			@RequestParam(name = "direction", defaultValue = "asc") String direction) {
+			@RequestParam(name = "direction", defaultValue = "asc") String direction,
+			@RequestParam(name = "title", required = false) String title,
+			@RequestParam(name = "resolved", required = false) Boolean resolved) {
 
 		return new ResponseEntity<PagedResponse<QueryResponseDto>>(
 
-				customerManagementService.getAllQueriesByCustomer(customerId, page, size, sortBy, direction),
+				customerManagementService.getAllQueriesByCustomer(customerId, page, size, sortBy, direction,title,resolved),
 				HttpStatus.OK);
 	}
 
@@ -322,12 +325,11 @@ public class CustomerController {
 	public ResponseEntity<PagedResponse<DocumentResponseDto>> getAllDocumentsOfCustomer(
 			@PathVariable(name = "customerId") long customerId,
 			@RequestParam(name = "page", defaultValue = "0") int page,
-			@RequestParam(name = "size", defaultValue = "10") int size,
+			@RequestParam(name = "size", defaultValue = "20") int size,
 			@RequestParam(name = "sortBy", defaultValue = "documentId") String sortBy,
-			@RequestParam(name = "direction", defaultValue = "asc") String direction,
-			@RequestParam(name = "verified", required = false) Boolean verified) {
+			@RequestParam(name = "direction", defaultValue = "asc") String direction) {
 		PagedResponse<DocumentResponseDto> response = documentService.getAllDocuments(customerId, page, size, sortBy,
-				direction, verified);
+				direction);
 		return ResponseEntity.ok(response);
 
 	}
@@ -376,5 +378,22 @@ public class CustomerController {
 		return new ResponseEntity<InterestCalculatorResponseDto>(
 				insuranceManagementService.calculateInterest(interestCalculatorDto), HttpStatus.OK);
 	}
+	@GetMapping("/documents-verification")
+	@PreAuthorize("hasRole('CUSTOMER')")
+	@Operation(summary = "Verifies if all required documents for the scheme are uploaded and verified. Returns a list of unverified or missing documents.")
+	public ResponseEntity<List<DocumentType>> documentsVerification(@RequestParam Long customerId, @RequestParam Long schemeId) {
+	    try {
+	        List<DocumentType> unverifiedDocuments = documentService.getUnverifiedDocuments(customerId, schemeId);
+	        if (unverifiedDocuments.isEmpty()) {
+	            return ResponseEntity.ok().body(Collections.emptyList()); 
+	        } else {
+	            return ResponseEntity.ok(unverifiedDocuments);
+	        }
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.badRequest().body(Collections.singletonList(DocumentType.valueOf("Error: " + e.getMessage())));
+	    }
+	}
+
+	
 
 }

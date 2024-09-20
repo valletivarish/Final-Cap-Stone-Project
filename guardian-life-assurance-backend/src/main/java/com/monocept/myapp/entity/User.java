@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Entity
@@ -26,14 +28,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(name = "username",unique = true)
+    @Column(name = "username", unique = true)
+    @NotEmpty(message = "Username is required")
     private String username;
 
     @Column(name = "password")
+    @NotEmpty(message = "Password is required")
     private String password;
 
-    @Column(name = "email",unique = true)
+    @Column(name = "email", unique = true)
+    @Email(message = "Invalid email format")
+    @NotEmpty(message = "Email is required")
     private String email;
+
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "roleId"))

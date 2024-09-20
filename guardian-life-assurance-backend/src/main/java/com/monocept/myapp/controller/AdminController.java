@@ -2,7 +2,6 @@ package com.monocept.myapp.controller;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -32,7 +34,6 @@ import com.monocept.myapp.dto.InsurancePlanRequestDto;
 import com.monocept.myapp.dto.InsuranceSchemeRequestDto;
 import com.monocept.myapp.dto.InsuranceSchemeResponseDto;
 import com.monocept.myapp.dto.InsuranceSettingRequestDto;
-import com.monocept.myapp.dto.PaymentResponseDto;
 import com.monocept.myapp.dto.TaxSettingRequestDto;
 import com.monocept.myapp.dto.WithdrawalResponseDto;
 import com.monocept.myapp.enums.ClaimStatus;
@@ -45,7 +46,6 @@ import com.monocept.myapp.service.ClaimService;
 import com.monocept.myapp.service.CommissionService;
 import com.monocept.myapp.service.DashboardService;
 import com.monocept.myapp.service.InsuranceManagementService;
-import com.monocept.myapp.service.PaymentService;
 import com.monocept.myapp.service.SettingService;
 import com.monocept.myapp.service.WithdrawalService;
 import com.monocept.myapp.util.PagedResponse;
@@ -71,9 +71,6 @@ public class AdminController {
 
 	@Autowired
 	private ClaimService claimService;
-
-	@Autowired
-	private PaymentService paymentService;
 
 	@Autowired
 	private WithdrawalService withdrawalService;
@@ -105,7 +102,7 @@ public class AdminController {
 	@Operation(summary = "Get admin profile", description = "Retrieve the profile details of the currently logged-in admin")
 	public ResponseEntity<AdminResponseDto> getAdminProfile() {
 		return new ResponseEntity<>(adminService.getAdminByUsername(), HttpStatus.OK);
-	}	
+	}
 
 	@PostMapping("/taxes")
 	@PreAuthorize("hasRole('ADMIN')")
@@ -113,8 +110,6 @@ public class AdminController {
 	public ResponseEntity<String> createTaxSetting(@RequestBody TaxSettingRequestDto taxSettingRequestDto) {
 		return new ResponseEntity<String>(settingService.createTaxSetting(taxSettingRequestDto), HttpStatus.CREATED);
 	}
-
-
 
 	@DeleteMapping("/agents/{id}")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
@@ -227,27 +222,6 @@ public class AdminController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/payments")
-	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-	@Operation(summary = "Get all payments with pagination and filtering", description = "Retrieve all payments with pagination, sorting, and optional search filters")
-	public ResponseEntity<PagedResponse<PaymentResponseDto>> getAllPayments(
-			@RequestParam(name = "page", defaultValue = "0") int page,
-			@RequestParam(name = "size", defaultValue = "5") int size,
-			@RequestParam(name = "sortBy", defaultValue = "paymentDate") String sortBy,
-			@RequestParam(name = "direction", defaultValue = "ASC") String direction,
-			@RequestParam(name = "minAmount", required = false) Double minAmount,
-			@RequestParam(name = "maxAmount", required = false) Double maxAmount,
-			@RequestParam(name = "startDate", required = false) LocalDateTime startDate,
-			@RequestParam(name = "endDate", required = false) LocalDateTime endDate,
-			@RequestParam(name = "customerId", required = false) String customerId,
-			@RequestParam(name = "paymentId", required = false) Long paymentId) {
-
-		PagedResponse<PaymentResponseDto> payments = paymentService.getAllPaymentsWithFilters(page, size, sortBy,
-				direction, minAmount, maxAmount, startDate, endDate, customerId, paymentId);
-
-		return new ResponseEntity<>(payments, HttpStatus.OK);
-	}
-
 	@GetMapping("/insurance-schemes")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
 	@Operation(summary = "Get all insurance schemes with pagination, sorting, and filtering", description = "Retrieve all insurance schemes with pagination, sorting, and optional filters")
@@ -316,11 +290,10 @@ public class AdminController {
 			@RequestParam(name = "agentId", required = false) Long agentId,
 			@RequestParam(name = "commissionType", required = false) CommissionType commissionType,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
-			@RequestParam(name = "toDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
-			@RequestParam(name = "amount", required = false) Double amount) {
+			@RequestParam(name = "toDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to) {
 
 		PagedResponse<CommissionResponseDto> commissions = commissionService.getCommissionsWithFilters(page, size,
-				sortBy, direction, agentId, commissionType, from, to, amount);
+				sortBy, direction, agentId, commissionType, from, to);
 
 		return new ResponseEntity<>(commissions, HttpStatus.OK);
 	}
@@ -354,6 +327,23 @@ public class AdminController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Map<String, Long>> getAdminDashboardCounts() {
 		return new ResponseEntity<Map<String, Long>>(dashboardService.getAdminDashboardCount(), HttpStatus.OK);
+	}
+
+	@GetMapping("admins/details")
+	@PreAuthorize("hasRole('ADMIN')")
+	@Operation(summary = "Get Current Admin Details", description = "Retrieve details of the currently logged-in admin.")
+	public ResponseEntity<Map<String, Object>> getAdminDetails() {
+		String currentUserEmail = getCurrentUserEmail();
+		Map<String, Object> userDetails = adminService.getUserByEmail(currentUserEmail);
+		return new ResponseEntity<>(userDetails, HttpStatus.OK);
+	}
+
+	private String getCurrentUserEmail() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+			return ((UserDetails) authentication.getPrincipal()).getUsername();
+		}
+		return null;
 	}
 
 }

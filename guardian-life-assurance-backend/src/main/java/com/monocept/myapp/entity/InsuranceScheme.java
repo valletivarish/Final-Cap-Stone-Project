@@ -5,6 +5,7 @@ import java.util.List;
 import com.monocept.myapp.enums.DocumentType;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -17,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
@@ -34,7 +36,7 @@ public class InsuranceScheme {
 	@Column(name = "schemeName")
 	private String schemeName;
 
-	@OneToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH })
+	@OneToMany(mappedBy = "insuranceScheme", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
 	private List<PolicyAccount> policies;
 	
 	@ManyToOne
@@ -46,6 +48,7 @@ public class InsuranceScheme {
 
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
+	@NotNull(message = "Scheme image is required")
 	private byte[] schemeImage;
 
 	@NotEmpty(message = "Description is required")
@@ -68,7 +71,7 @@ public class InsuranceScheme {
 	@PositiveOrZero(message = "Maximum policy time must be a non-negative number")
 	@Column(name = "maxPolicyTerm")
 	private Integer maxPolicyTerm;
-
+ 
 	@PositiveOrZero(message = "Minimum age must be a non-negative number")
 	@Column(name = "minAge")
 	private int minAge;
@@ -81,15 +84,18 @@ public class InsuranceScheme {
 	@Column(name = "profitRatio")
 	private Double profitRatio;
 
-	@PositiveOrZero(message = "Registration commission ratio must be a non-negative number")
-	@Column(name = "registrationCommRatio")
-	private Double registrationCommRatio;
+	@PositiveOrZero(message = "Registration commission amount must be a non-negative number")
+	@Column(name = "registrationCommAmount")
+	private Double registrationCommAmount;
 
 	@PositiveOrZero(message = "Installment commission ratio must be a non-negative number")
 	@Column(name = "installmentCommRatio")
 	private Double installmentCommRatio;
 	
+	
 	@ElementCollection(targetClass = DocumentType.class)
-    @Column(name = "requiredDocuments")
-    private List<DocumentType> requiredDocuments;
+	@CollectionTable(name = "insurance_scheme_documents", joinColumns = @JoinColumn(name = "scheme_id"))
+	@Column(name = "required_document")
+	private List<DocumentType> requiredDocuments;
+
 }

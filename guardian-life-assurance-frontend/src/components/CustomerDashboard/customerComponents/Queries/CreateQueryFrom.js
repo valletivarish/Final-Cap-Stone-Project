@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createCustomerQuery } from '../../../../services/queriesServices'; 
 import { showToastSuccess, showToastError } from '../../../../utils/toast/Toast'; 
 import './CreateQueryForm.css';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { verifyCustomer } from '../../../../services/authServices';
 
 const CreateQueryForm = () => {
 const {customerId}=useParams();
@@ -16,6 +17,26 @@ const {customerId}=useParams();
     if (!message) validationErrors.message = "Message is required";
     return validationErrors;
   };
+
+  const navigate = useNavigate();
+  const [isCustomer, setIsCustomer] = useState(false);
+
+  useEffect(() => {
+    const verifyCustomerAndNavigate = async () => {
+      try {
+        const response = await verifyCustomer();
+        if (!response) {
+          navigate("/login");
+          return;
+        } else {
+          setIsCustomer(true);
+        }
+      } catch (error) {
+        navigate("/login");
+      }
+    };
+    verifyCustomerAndNavigate();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

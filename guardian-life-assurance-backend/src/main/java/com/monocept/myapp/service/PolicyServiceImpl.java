@@ -41,7 +41,7 @@ public class PolicyServiceImpl implements PolicyService{
 	        PageRequest pageRequest = PageRequest.of(page, size, sort);
 
 	        Page<PolicyAccount> policyPage = policyRepository.findAllByAgentWithFilters(getAgentFromSecurityContext().getAgentId(), policyNumber, premiumType, status, pageRequest);
-	        List<PolicyAccountResponseDto> policies = policyPage.getContent().stream().map(this::convertToPolicyResponseDto).collect(Collectors.toList());
+	        List<PolicyAccountResponseDto> policies = policyPage.getContent().stream().map(policy->convertToPolicyResponseDto(policy)).collect(Collectors.toList());
 
 	        return new PagedResponse<>(policies, policyPage.getNumber(), policyPage.getSize(), policyPage.getTotalElements(), policyPage.getTotalPages(), policyPage.isLast());
 	}

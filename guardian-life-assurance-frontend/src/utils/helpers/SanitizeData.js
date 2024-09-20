@@ -505,12 +505,14 @@ export const sanitizeClaimData = (
   const keyMapping = {
     claimId: "Claim ID",
     policyNo: "Policy Number",
+    customerId:"Customer Id",
     claimAmount: "Claim Amount",
     claimReason: "Claim Reason",
     claimDate: "Claim Date",
     status: "Status",
     approvalDate: "Approval Date",
     rejectionDate: "Rejection Date",
+    
   };
 
   
@@ -664,7 +666,8 @@ export const sanitizeQueryData = (data, keysToBeIncluded, handleRespond) => {
     message: "Message",
     resolved: "Resolved",
     resolvedAt: "resolved At",
-    resolvedBy: "resolved By"
+    resolvedBy: "resolved By",
+    response:"Response"
   };
 
   const sanitizedContent = data.content.map((query) => {
@@ -673,7 +676,10 @@ export const sanitizeQueryData = (data, keysToBeIncluded, handleRespond) => {
     keysToBeIncluded.forEach((key) => {
       if (key === "resolved") {
         sanitizedQuery[keyMapping[key]] = query[key] ? "Resolved" : "Unresolved";
-      } else {
+      }else if (key === "resolvedAt" && !query["resolved"]) {
+        sanitizedQuery[keyMapping[key]] = "N/A";
+      } 
+      else {
         sanitizedQuery[keyMapping[key]] =
           query[key] !== null && query[key] !== undefined ? query[key] : "N/A";
       }
@@ -701,6 +707,7 @@ export const sanitizeQueryData = (data, keysToBeIncluded, handleRespond) => {
   };
 };
 export const sanitizeCustomerQueryData = (data, keysToBeIncluded, handleRespond) => {
+  console.log(data)
   const keyMapping = {
     queryId: "Query ID",
     customerId: "Customer ID",
@@ -709,6 +716,7 @@ export const sanitizeCustomerQueryData = (data, keysToBeIncluded, handleRespond)
     resolved: "Resolved",
     resolvedAt: "Resolved At",
     resolvedBy: "Resolved By",
+    response:"Response"
   };
 
   const sanitizedContent = data.content.map((query) => {
@@ -717,7 +725,11 @@ export const sanitizeCustomerQueryData = (data, keysToBeIncluded, handleRespond)
     keysToBeIncluded.forEach((key) => {
       if (key === "resolved") {
         sanitizedQuery[keyMapping[key]] = query[key] ? "Resolved" : "Unresolved";
-      } else {
+      }
+      else if (key === "resolvedAt" && !query["resolved"]) {
+        sanitizedQuery[keyMapping[key]] = "N/A";
+      }
+       else {
         sanitizedQuery[keyMapping[key]] =
           query[key] !== null && query[key] !== undefined ? query[key] : "N/A";
       }

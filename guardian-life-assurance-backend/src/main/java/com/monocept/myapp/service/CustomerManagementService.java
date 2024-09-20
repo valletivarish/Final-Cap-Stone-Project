@@ -32,7 +32,7 @@ public interface CustomerManagementService {
 
 	String updateCustomerQuery(long customerId, CustomerSideQueryRequestDto customerSideQueryRequestDto);
 
-	PagedResponse<QueryResponseDto> getAllQueriesByCustomer(long customerId, int page, int size, String sortBy, String direction);
+	PagedResponse<QueryResponseDto> getAllQueriesByCustomer(long customerId, int page, int size, String sortBy, String direction, String title, Boolean resolved);
 
 	String deleteQuery(long customerId, long queryId);
 

@@ -53,29 +53,31 @@ const InsuranceSetting = () => {
           <h1 className="insurance-settings-header">Insurance Settings</h1>
           <form onSubmit={handleSubmit} className="insurance-settings-form">
             <div className="form-group">
-              <label htmlFor="claimDeduction">Claim Deduction</label>
+              <label htmlFor="claimDeduction">Claim Deduction Percentage</label>
               <input
                 type="number"
                 id="claimDeduction"
                 name="claimDeduction"
                 value={claimDeduction}
                 onChange={handleClaimDeductionChange}
-                placeholder="Enter claim deduction"
+                placeholder="Enter claim deduction percentage"
                 className="form-input"
                 min="0"
+                step={0.1}
               />
             </div>
             <div className="form-group">
-              <label htmlFor="penaltyAmount">Penalty Amount</label>
+              <label htmlFor="penaltyAmount">Penalty Deduction Percentage</label>
               <input
                 type="number"
                 id="penaltyAmount"
                 name="penaltyAmount"
                 value={penaltyAmount}
                 onChange={handlePenaltyAmountChange}
-                placeholder="Enter penalty amount"
+                placeholder="Enter penalty deduction percentage"
                 className="form-input"
                 min="0"
+                step={0.1}
               />
             </div>
             <button type="submit" className="submit-button">

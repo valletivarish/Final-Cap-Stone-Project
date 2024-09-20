@@ -96,14 +96,14 @@ const CommissionWithdrawals = () => {
 
   const handleSearch = () => {
     const params = {
-      page,
-      size,
-      sortBy,
-      direction,
-      agentId,
+      page:parseInt(searchParams.get("page")) || 0,
+      size:parseInt(searchParams.get("size")) || 5,
+      sortBy:searchParams.get("sortBy") || "",
+      direction:searchParams.get("direction") || "",
+      agentId:searchParams.get("agentId") || "",
       status,
-      fromDate,
-      toDate,
+      fromDate:searchParams.get("fromDate") || "",
+      toDate:searchParams.get("toDate") || "",
     };
     setSearchParams(params);
     debouncedFetchWithdrawals(params);
@@ -188,9 +188,11 @@ const CommissionWithdrawals = () => {
       direction,
       agentId,
       status,
+      fromDate,
+      toDate,
     };
     fetchWithdrawals(params);
-  }, [page, size, sortBy, direction, agentId, status,isVerified]);
+  }, [searchParams,isVerified]);
 
   if (error) {
     return <div>{error}</div>;

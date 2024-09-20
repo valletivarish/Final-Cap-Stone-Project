@@ -26,4 +26,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
 	Optional<Document> findByCustomerAndDocumentName(Customer customer, DocumentType documentName);
 
+	Page<Document> findAllByCustomer(Customer customer, PageRequest pageRequest);
+
 }

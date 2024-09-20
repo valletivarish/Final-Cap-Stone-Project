@@ -3,8 +3,9 @@ import { getCustomerById, updateCustomer } from '../../../../services/customerSe
 import { getAllStates } from '../../../../services/gaurdianLifeAssuranceServices';
 import './CustomerProfile.css';
 import { showToastSuccess, showToastError } from '../../../../utils/toast/Toast';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getStateCount } from '../../../../services/stateAndCityManagementService';
+import { verifyCustomer } from '../../../../services/authServices';
 
 const CustomerProfile = () => {
   const { customerId } = useParams();
@@ -26,7 +27,30 @@ const CustomerProfile = () => {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+  const [isCustomer, setIsCustomer] = useState(false);
+
   useEffect(() => {
+    const verifyCustomerAndNavigate = async () => {
+      try {
+        const response = await verifyCustomer();
+        if (!response) {
+          navigate("/login");
+          return;
+        } else {
+          setIsCustomer(true);
+        }
+      } catch (error) {
+        navigate("/login");
+      }
+    };
+    verifyCustomerAndNavigate();
+  }, []);
+
+  useEffect(() => {
+    if(!isCustomer){
+      return;
+    }
     const fetchData = async () => {
       try {
         const response = await getCustomerById(customerId);
@@ -42,10 +66,11 @@ const CustomerProfile = () => {
         setLoading(false);
       } catch (error) {
         setLoading(false);
+        showToastError(error.message);
       }
     };
     fetchData();
-  }, [customerId]);
+  }, [customerId,isCustomer]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -80,7 +105,7 @@ const CustomerProfile = () => {
         return;
       }
     try {
-      await updateCustomer({
+      const response=await updateCustomer({
         customerId: customerData.customerId,
         firstName: customerData.firstName,
         lastName: customerData.lastName,
@@ -94,9 +119,11 @@ const CustomerProfile = () => {
         stateId: customerData.stateId,
         cityId: customerData.cityId,
       });
-      showToastSuccess('Customer details updated successfully!');
+      showToastSuccess(response);
+      localStorage.setItem("firstName",firstName);
+      localStorage.setItem('lastName',lastName);
     } catch (error) {
-      showToastError('Failed to update customer details.');
+      showToastError(error.message);
     }
   };
 

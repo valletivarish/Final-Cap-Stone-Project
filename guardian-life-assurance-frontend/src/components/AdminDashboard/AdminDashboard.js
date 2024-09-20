@@ -11,7 +11,7 @@ import {
   FaThList,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { getAdminDashboardCount } from "../../services/adminServices";
+import { getAdminDashboardCount, getAdminName } from "../../services/adminServices";
 import Card from "../../sharedComponents/Card/Card";
 import "./AdminDashboard.css";
 import { verifyAdmin } from "../../services/authServices";
@@ -31,7 +31,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const adminName = "Admin";
+  const adminName = localStorage.getItem("adminName");
 
   useEffect(() => {
     const verifyAndFetchCounts = async () => {
@@ -42,6 +42,8 @@ const AdminDashboard = () => {
           return;
         } else {
           setIsAdmin(true);
+          const adminResponse=await getAdminName();
+          localStorage.setItem("adminName",adminResponse.AdminName);
           const count = await getAdminDashboardCount();
           setCounts(count);
         }

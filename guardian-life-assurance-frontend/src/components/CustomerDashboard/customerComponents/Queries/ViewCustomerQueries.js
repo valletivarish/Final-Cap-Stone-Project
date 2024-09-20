@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getAllCustomerQueries } from '../../../../services/queriesServices';
 import Table from '../../../../sharedComponents/Table/Table';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import { debounce } from '../../../../utils/helpers/Debounce';
 import { showToastError, showToastSuccess } from '../../../../utils/toast/Toast';
 import { sanitizeCustomerQueryData } from '../../../../utils/helpers/SanitizeData';
 import "../../../../components/Queries/ViewQueries.css"
 import { deleteQuery } from '../../../../services/queriesServices';
+import { verifyCustomer } from '../../../../services/authServices';
 Modal.setAppElement('#root');
 
 const ViewCustomerQueries = () => {
@@ -20,8 +21,6 @@ const ViewCustomerQueries = () => {
 
   const page = parseInt(searchParams.get("page")) || 0;
   const size = parseInt(searchParams.get("size")) || 5;
-  const sortBy = searchParams.get("sortBy") || "queryId";
-  const direction = searchParams.get("direction") || "asc";
   const title = searchParams.get("title") || "";
   const resolved = searchParams.get("resolved") === "true" 
     ? true 
@@ -29,13 +28,33 @@ const ViewCustomerQueries = () => {
     ? false
     : null;
 
+    const navigate = useNavigate();
+    const [isCustomer, setIsCustomer] = useState(false);
+  
+    useEffect(() => {
+      const verifyCustomerAndNavigate = async () => {
+        try {
+          const response = await verifyCustomer();
+          if (!response) {
+            navigate("/login");
+            return;
+          } else {
+            setIsCustomer(true);
+          }
+        } catch (error) {
+          navigate("/login");
+        }
+      };
+      verifyCustomerAndNavigate();
+    }, []);
+
   const debouncedFetchQueries = useCallback(
     debounce(async (params) => {
       try {
         const response = await getAllCustomerQueries(customerId, params);
         const sanitizedData = sanitizeCustomerQueryData(
           response, 
-          ["customerId", "queryId", "title", "message", "resolved", "resolvedAt", "resolvedBy"], 
+          ["customerId", "queryId", "title", "message","response", "resolved", "resolvedAt", "resolvedBy"], 
           handleRespond
         );
         setQueries(sanitizedData);
@@ -48,11 +67,14 @@ const ViewCustomerQueries = () => {
   );
 
   useEffect(() => {
+    if(!isCustomer){
+      return;
+    }
     const params = {
-      page, size, sortBy, direction, title, resolved,
+      page, size, title, resolved,
     };
     debouncedFetchQueries(params);
-  }, [page, size, sortBy, direction, title, resolved, debouncedFetchQueries]);
+  }, [page, size, title, resolved, debouncedFetchQueries,isCustomer]);
 
   const handleSearchChange = (key, value) => {
     setSearchParams((prev) => {
@@ -74,8 +96,9 @@ const ViewCustomerQueries = () => {
   const handleConfirmDelete =async () => {
     try{
       const response=await deleteQuery(customerId,selectedQueryId);
+      showToastSuccess(response);
       const params = {
-        page, size, sortBy, direction, title, resolved,
+        page, size, title, resolved,
       };
       debouncedFetchQueries(params);
       showToastSuccess(`Query ID ${selectedQueryId} deleted successfully`);

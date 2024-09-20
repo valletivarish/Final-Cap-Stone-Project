@@ -77,6 +77,7 @@ const ViewDocuments = () => {
   };
 
   const handleApprove = async (documentId) => {
+    setSearchParams([]);
     await approveDocument(documentId);
     const params = {
       page,
@@ -102,9 +103,10 @@ const ViewDocuments = () => {
   };
 
   const handleReject = async (documentId) => {
+    setSearchParams([]);
     await rejectDocument(documentId)
     const params = {
-      page,
+      page:0,
       size,
       sortBy,
       direction,

@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -39,5 +40,6 @@ public class Document {
 
     @Lob
     @Column(name = "content", columnDefinition = "LONGBLOB")
+    @NotNull(message = "Document content is required")
     private byte[] content; 
 }

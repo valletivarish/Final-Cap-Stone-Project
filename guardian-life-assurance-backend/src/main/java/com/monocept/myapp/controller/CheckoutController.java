@@ -37,19 +37,18 @@ public class CheckoutController {
 	@Autowired
 	private InstallmentService installmentService;
 
+
 	@PostMapping("/sessions")
 	@PreAuthorize("hasRole('CUSTOMER')")
-	@Operation(
-		    summary = "Create a Checkout Session",
-		    description = "Creates a checkout session for payments. Requires the amount and request data to initiate a Stripe checkout session. Returns the checkout session URL."
-		)
+	@Operation(summary = "Create a Checkout Session", description = "Creates a checkout session for payments. Requires the amount and request data to initiate a Stripe checkout session. Returns the checkout session URL.")
 	public ResponseEntity<String> createCheckoutSession(@RequestBody Map<String, Object> requestBody) {
 		double amount = Double.parseDouble(requestBody.get("amount").toString());
 		String successUrl = "http://localhost:3000/success";
 		String cancelUrl = "http://localhost:3000/cancel";
-
+		 if (!(requestBody.get("requestData") instanceof Map)) {
+	            return ResponseEntity.badRequest().body("Invalid request data format.");
+	        }
 		Map<String, Object> requestData = (Map<String, Object>) requestBody.get("requestData");
-		System.out.println(requestData);
 
 		try {
 			Session session = stripeService.createCheckoutSession(amount, successUrl, cancelUrl, requestData);
@@ -59,12 +58,9 @@ public class CheckoutController {
 		}
 	}
 
-	@PostMapping("/customers/{customerId}/installments/{installmentId}/sessions")
+	@PostMapping("/customers/{customerId}/policies/{policyNo}/installments/{installmentId}/sessions")
 	@PreAuthorize("hasRole('CUSTOMER')")
-	@Operation(
-	        summary = "Create Installment Checkout Session",
-	        description = "Creates a Stripe checkout session for paying a specific installment. Requires customer ID, installment ID, and payment details."
-	    )
+	@Operation(summary = "Create Installment Checkout Session", description = "Creates a Stripe checkout session for paying a specific installment. Requires customer ID, installment ID, and payment details.")
 	public ResponseEntity<String> createInstallmentCheckoutSession(@PathVariable(name = "customerId") Long customerId,
 			@PathVariable(name = "installmentId") Long installmentId,
 			@RequestBody InstallmentPaymentRequestDto paymentRequest) {
@@ -85,10 +81,7 @@ public class CheckoutController {
 
 	@PostMapping("/payments/verify")
 	@PreAuthorize("hasRole('CUSTOMER')")
-	@Operation(
-	        summary = "Verify Payment",
-	        description = "Verifies the payment session using the session ID. If successful, processes policy purchase or installment payment based on the session metadata."
-	    )
+	@Operation(summary = "Verify Payment", description = "Verifies the payment session using the session ID. If successful, processes policy purchase or installment payment based on the session metadata.")
 	public ResponseEntity<?> verifyPayment(@RequestBody Map<String, String> paymentData) throws DocumentException {
 		String sessionId = paymentData.get("sessionId");
 
@@ -123,7 +116,7 @@ public class CheckoutController {
 					Long customerId = Long.parseLong(customerIdString);
 					Long policyId = customerManagementService.processPolicyPurchase(accountRequestDto, customerId);
 
-					return ResponseEntity.ok(Map.of("success", true, "policyId", policyId, "customerId", customerId,
+					return ResponseEntity.ok(Map.of("success", true, "policyNo", policyId, "customerId", customerId,
 							"paymentType", paymentType));
 
 				} else if ("installmentPayment".equals(paymentType)) {

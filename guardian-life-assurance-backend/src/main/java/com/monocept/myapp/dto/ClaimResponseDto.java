@@ -10,6 +10,7 @@ import lombok.Data;
 public class ClaimResponseDto {
     private long claimId;
     private long policyNo;
+    private long customerId;
     private double claimAmount;
     private String claimReason;
     private LocalDateTime claimDate;

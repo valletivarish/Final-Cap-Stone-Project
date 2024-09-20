@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.monocept.myapp.dto.ResetPasswordRequestDto;
 import com.monocept.myapp.entity.Claim;
+import com.monocept.myapp.entity.Customer;
+import com.monocept.myapp.entity.CustomerQuery;
+import com.monocept.myapp.entity.Employee;
 import com.monocept.myapp.entity.OtpStore;
 import com.monocept.myapp.entity.User;
 import com.monocept.myapp.entity.WithdrawalRequest;
@@ -147,6 +150,25 @@ public class EmailServiceImpl implements EmailService {
 	        agentFirstName, agentLastName, withdrawal.getWithdrawalRequestId(), withdrawal.getAmount()
 	    );
 	    sendEmail(agentEmail, subject, body);
+	}
+
+	@Override
+	public void sendQueryResponseEmail(Employee employee, CustomerQuery query) {
+		String employeeName = employee.getFirstName() + " " + employee.getLastName();
+		String subject="Query ID "+query.getQueryId()+" Resolved - Response from Guardian Life Asuurance";
+	    String emailMessage = "Dear Customer,\n\n" +
+	        "We are pleased to inform you that your query with ID: " + query.getQueryId() + 
+	        " has been successfully resolved by our representative, " + employeeName + ".\n\n" +
+	        "Response: " + query.getResponse() + "\n\n" +
+	        "Thank you for your patience and trust in Guardian Life Assurance.\n" +
+	        "Please don't hesitate to contact us if you need further assistance.\n\n" +
+	        "Best regards,\n" +
+	        "Guardian Life Assurance Team";
+	    Customer customer = query.getCustomer();
+	    User user = customer.getUser();
+	    String customerEmail=user.getEmail();
+	    sendEmail(customerEmail,subject,emailMessage);
+		
 	}
 
 

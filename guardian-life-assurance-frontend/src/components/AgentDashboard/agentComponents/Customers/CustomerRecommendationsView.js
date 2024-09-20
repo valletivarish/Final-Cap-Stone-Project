@@ -7,6 +7,7 @@ import '../../../Customers/ViewCustomers.css';
 import { useNavigate } from "react-router-dom";
 import { sanitizeRecommendationData } from "../../../../utils/helpers/SanitizeData";
 import '../../../Customers/ViewCustomers.css';
+import { verifyAgent } from "../../../../services/authServices";
 
 const CustomerRecommendationsView = () => {
   const navigate = useNavigate();
@@ -26,7 +27,28 @@ const CustomerRecommendationsView = () => {
 
   const keysToBeIncluded = ["customerId", "firstName", "lastName", "email", "dateOfBirth", "city", "state"];
 
+  const [isAgent, setIsAgent] = useState(false);
   useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
+
+  useEffect(() => {
+    if(!isAgent){
+      return;
+    }
     const fetchCustomers = async () => {
       try {
         const params = {
@@ -49,7 +71,7 @@ const CustomerRecommendationsView = () => {
     };
 
     fetchCustomers();
-  }, [searchParams]);
+  }, [searchParams,isAgent]);
 
   const handleRecommendPlan = (customerId) => {
     navigate(`/agent-dashboard/customers/${customerId}/recommend-plan`);

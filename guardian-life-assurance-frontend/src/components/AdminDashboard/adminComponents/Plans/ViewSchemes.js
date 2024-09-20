@@ -50,7 +50,7 @@ const ViewSchemes = () => {
       } catch (err) {
         setError("Failed to fetch schemes");
       }
-    }, 300),
+    }, 200),
     []
   );
 

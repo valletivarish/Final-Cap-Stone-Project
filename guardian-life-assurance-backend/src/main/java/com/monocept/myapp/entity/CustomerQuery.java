@@ -32,7 +32,7 @@ public class CustomerQuery {
     private String title;
 
     @NotEmpty(message = "Message is required")
-    @Column(name = "message")
+    @Column(name = "message",length = 65535, columnDefinition = "TEXT")
     private String message;
 
     @Column(length = 65535, columnDefinition = "TEXT")

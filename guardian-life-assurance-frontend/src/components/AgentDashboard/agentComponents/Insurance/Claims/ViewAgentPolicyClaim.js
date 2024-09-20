@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { getAgentPolicyClaims} from "../../../../../services/agentServices";
+import { getAgentPolicyClaims } from "../../../../../services/agentServices";
 import Table from "../../../../../sharedComponents/Table/Table";
-import { useSearchParams } from "react-router-dom";
-import { showToastError, showToastSuccess } from "../../../../../utils/toast/Toast";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  showToastError,
+  showToastSuccess,
+} from "../../../../../utils/toast/Toast";
 import { sanitizeAgentPolicyClaimData } from "../../../../../utils/helpers/SanitizeData";
-import '../../../../Policies/ViewClaims.css';
+import "../../../../Policies/ViewClaims.css";
+import { verifyAgent } from "../../../../../services/authServices";
 
 const ViewAgentPolicyClaims = () => {
   const [claims, setClaims] = useState([]);
@@ -22,9 +26,34 @@ const ViewAgentPolicyClaims = () => {
   const [sortDirection, setSortDirection] = useState(direction);
 
   const keysToBeIncluded = [
-    "claimId", "policyNo", "claimAmount", "claimReason",
-    "claimDate", "status", "approvalDate", "rejectionDate"
+    "claimId",
+    "policyNo",
+    "claimAmount",
+    "claimReason",
+    "claimDate",
+    "status",
+    "approvalDate",
+    "rejectionDate",
   ];
+
+  const [isAgent, setIsAgent] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
 
   const fetchAgentClaims = async () => {
     try {
@@ -38,7 +67,10 @@ const ViewAgentPolicyClaims = () => {
       };
 
       const response = await getAgentPolicyClaims(params);
-      const sanitizedClaims = sanitizeAgentPolicyClaimData(response, keysToBeIncluded);
+      const sanitizedClaims = sanitizeAgentPolicyClaimData(
+        response,
+        keysToBeIncluded
+      );
       setClaims(sanitizedClaims);
     } catch (error) {
       setError("Failed to fetch claims");
@@ -47,9 +79,11 @@ const ViewAgentPolicyClaims = () => {
   };
 
   useEffect(() => {
+    if(!isAgent) {
+      return
+    };
     fetchAgentClaims();
-  }, [page, size, sortBy, direction, status, policyNo]);
-
+  }, [page, size, sortBy, direction, status, policyNo,isAgent]);
 
   const handleSearch = () => {
     const currentParams = Object.fromEntries(searchParams);
@@ -71,50 +105,51 @@ const ViewAgentPolicyClaims = () => {
   };
 
   return (
-    <div className="view-claims-container">
-      <h1>View Agent Policy Claims</h1>
+    <>
+      {isAgent && (
+        <div className="view-claims-container">
+          <h1>View Agent Policy Claims</h1>
 
-      <div className="view-claims-filters">
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="">Select Status</option>
-          <option value="PENDING">Pending</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
-        </select>
-        <input
-          type="number"
-          placeholder="Policy Number"
-          value={policyNo}
-          onChange={(e) => setPolicyNo(e.target.value)}
-        />
-        <select
-          value={sortField}
-          onChange={(e) => setSortField(e.target.value)}
-        >
-          <option value="claimId">Claim ID</option>
-          <option value="claimAmount">Claim Amount</option>
-          <option value="policyNo">Policy Number</option>
-        </select>
-        <select
-          value={sortDirection}
-          onChange={(e) => setSortDirection(e.target.value)}
-        >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
-        <button onClick={handleSearch}>Search</button>
-        <button onClick={handleReset}>Reset</button>
-      </div>
+          <div className="view-claims-filters">
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="">Select Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+            <input
+              type="number"
+              placeholder="Policy Number"
+              value={policyNo}
+              onChange={(e) => setPolicyNo(e.target.value)}
+            />
+            <select
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value)}
+            >
+              <option value="claimId">Claim ID</option>
+              <option value="claimAmount">Claim Amount</option>
+              <option value="policyNo">Policy Number</option>
+            </select>
+            <select
+              value={sortDirection}
+              onChange={(e) => setSortDirection(e.target.value)}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+            <button onClick={handleSearch}>Search</button>
+            <button onClick={handleReset}>Reset</button>
+          </div>
 
-      <Table
-        data={claims}
-        searchParams={searchParams}
-        setSearchParams={setSearchParams}
-      />
-    </div>
+          <Table
+            data={claims}
+            searchParams={searchParams}
+            setSearchParams={setSearchParams}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

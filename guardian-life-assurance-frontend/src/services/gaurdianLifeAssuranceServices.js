@@ -576,8 +576,10 @@ export const getAllPayments = async (params) => {
     handleApiError(error);
   }
 };
-export const downloadPaymentReport = async (startDate, endDate) => {
+export const downloadPaymentReport = async (params) => {
   try {
+    const startDate=params.startDate;
+    const endDate=params.endDate;
     const token = getAuthToken();
     const response = await axios.get(
       "http://localhost:8080/guardian-life-assurance/payments/pdf",
@@ -586,10 +588,7 @@ export const downloadPaymentReport = async (startDate, endDate) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        params: {
-          startDate: startDate || "",
-          endDate: endDate || "",
-        },
+        params: params,
       }
     );
 
@@ -640,7 +639,7 @@ export const approveClaim = async (claimId) => {
   try {
     const token = getAuthToken();
     const response = await axios.put(
-      `http://localhost:8080/guardian-life-assurance/claims/${claimId}/approval`,
+      `http://localhost:8080/guardian-life-assurance/claims/${claimId}/approval`,{},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -656,7 +655,7 @@ export const rejectClaim = async (claimId) => {
   try {
     const token = getAuthToken();
     const response = await axios.put(
-      `http://localhost:8080/guardian-life-assurance/claims/${claimId}/rejection`,
+      `http://localhost:8080/guardian-life-assurance/claims/${claimId}/rejection`,{},
       {
         headers: {
           Authorization: `Bearer ${token}`,

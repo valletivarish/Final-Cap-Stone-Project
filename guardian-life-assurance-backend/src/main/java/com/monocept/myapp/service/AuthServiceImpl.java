@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		String usernameOrEmail = userDetails.getUsername();
-		String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst()
+		String role = userDetails.getAuthorities().stream().map(authority -> authority.getAuthority()).findFirst()
 				.orElse("ROLE_CUSTOMER");
 
 		return new JwtResponse(usernameOrEmail, role);
@@ -113,11 +111,10 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public String changePassword(ChangePasswordRequestDto changePasswordRequestDto) {
 		System.out.println(changePasswordRequestDto);
-		 if (changePasswordRequestDto.getNewPassword() == null || 
-			        changePasswordRequestDto.getExistingPassword() == null || 
-			        changePasswordRequestDto.getConfirmPassword() == null) {
-			        throw new IllegalArgumentException("Password fields cannot be null");
-			    }
+		if (changePasswordRequestDto.getNewPassword() == null || changePasswordRequestDto.getExistingPassword() == null
+				|| changePasswordRequestDto.getConfirmPassword() == null) {
+			throw new IllegalArgumentException("Password fields cannot be null");
+		}
 		String userNameOrEmail = getEmailFromSecurityContext();
 		System.out.println(userNameOrEmail);
 		User user = userRepository.findByUsernameOrEmail(userNameOrEmail, userNameOrEmail).orElse(null);
@@ -145,33 +142,31 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public Map<String, Object> getUserByEmail(String email) {
-	    User user = userRepository.findByEmail(email).orElse(null);
-	    
-	    if (user == null) {
-	        return null;
-	    }
+		User user = userRepository.findByEmail(email).orElse(null);
 
-	    String fullName = "User";
-	    String firstName = "";
-	    String lastName = "";
+		if (user == null) {
+			return null;
+		}
 
-	    Customer customer = customerRepository.findByUser(user);
-	    if (customer != null) {
-	        fullName = customer.getFirstName() + " " + customer.getLastName();
-	        firstName = customer.getFirstName();
-	        lastName = customer.getLastName();
-	    }
+		String fullName = "User";
+		String firstName = "";
+		String lastName = "";
 
-	    // Create a map to hold user details
-	    Map<String, Object> userDetails = new HashMap<>();
-	    userDetails.put("userId", customer.getCustomerId());
-	    userDetails.put("email", user.getEmail());
-	    userDetails.put("userName", fullName);
-	    userDetails.put("firstName", firstName);
-	    userDetails.put("lastName", lastName);
+		Customer customer = customerRepository.findByUser(user);
+		if (customer != null) {
+			fullName = customer.getFirstName() + " " + customer.getLastName();
+			firstName = customer.getFirstName();
+			lastName = customer.getLastName();
+		}
 
-	    return userDetails;
+		Map<String, Object> userDetails = new HashMap<>();
+		userDetails.put("userId", customer.getCustomerId());
+		userDetails.put("email", user.getEmail());
+		userDetails.put("userName", fullName);
+		userDetails.put("firstName", firstName);
+		userDetails.put("lastName", lastName);
+
+		return userDetails;
 	}
-
 
 }

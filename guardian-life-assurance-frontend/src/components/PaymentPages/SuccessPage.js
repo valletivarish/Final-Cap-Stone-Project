@@ -6,6 +6,7 @@ const SuccessPage = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const [customerId, setCustomerId] = useState(null);
+  const [policyId,setPolicyId]=useState(null);
   const [paymentVerified, setPaymentVerified] = useState(false);
   const navigate = useNavigate();
 
@@ -29,6 +30,9 @@ const SuccessPage = () => {
       if (response.data.customerId) {
         setCustomerId(response.data.customerId);
       }
+      if(response.data.policyNo){
+        setPolicyId(response.data.policyNo);
+      }
       setPaymentVerified(true); 
     } catch (error) {
       console.error('Error verifying payment:', error);
@@ -36,7 +40,7 @@ const SuccessPage = () => {
   };
   const goToDashboard = () => {
     if (customerId) {
-      navigate(`/customer-dashboard/${customerId}`);
+      navigate(`/customer-dashboard/${customerId}/policies/${policyId}`);
     }
   };
 

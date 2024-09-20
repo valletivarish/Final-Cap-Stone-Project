@@ -11,9 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,8 +20,6 @@ import com.monocept.myapp.dto.InsuranceSchemeRequestDto;
 import com.monocept.myapp.dto.InsuranceSchemeResponseDto;
 import com.monocept.myapp.dto.InterestCalculatorRequestDto;
 import com.monocept.myapp.dto.InterestCalculatorResponseDto;
-import com.monocept.myapp.dto.ReferralEmailRequestDto;
-import com.monocept.myapp.entity.Agent;
 import com.monocept.myapp.entity.InsurancePlan;
 import com.monocept.myapp.entity.InsuranceScheme;
 import com.monocept.myapp.entity.TaxSetting;
@@ -49,6 +44,9 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
 
 	@Override
 	public String createInsurancePlan(InsurancePlanRequestDto insurancePlanRequestDto) {
+		if (insurancePlanRepository.existsByPlanName(insurancePlanRequestDto.getPlanName())) {
+	        throw new IllegalArgumentException("An insurance plan with this name already exists.");
+	    }
 		InsurancePlan insurancePlan = new InsurancePlan();
 		insurancePlan.setPlanId(insurancePlanRequestDto.getPlanId());
 		insurancePlan.setPlanName(insurancePlanRequestDto.getPlanName());
@@ -118,11 +116,10 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
 		insuranceScheme.setMinAmount(requestDto.getMinAmount());
 		insuranceScheme.setMinPolicyTerm(requestDto.getMinPolicyTerm());
 		insuranceScheme.setProfitRatio(requestDto.getProfitRatio());
-		insuranceScheme.setRegistrationCommRatio(requestDto.getRegistrationCommRatio());
+		insuranceScheme.setRegistrationCommAmount(requestDto.getRegistrationCommAmount());
 		insuranceScheme.setActive(true);
 		insuranceScheme.setSchemeName(requestDto.getSchemeName());
 		insuranceScheme.setInsurancePlan(insurancePlan);
-		
 		insuranceScheme.setRequiredDocuments(requestDto.getRequiredDocuments());
 		insuranceSchemeRepository.save(insuranceScheme);
 		List<InsuranceScheme> schemes = insurancePlan.getScheme();
@@ -156,7 +153,7 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
 		schemeResponseDto.setMinAmount(scheme.getMinAmount());
 		schemeResponseDto.setMinPolicyTerm(scheme.getMinPolicyTerm());
 		schemeResponseDto.setProfitRatio(scheme.getProfitRatio());
-		schemeResponseDto.setRegistrationCommRatio(scheme.getRegistrationCommRatio());
+		schemeResponseDto.setRegistrationCommAmount(scheme.getRegistrationCommAmount());
 		schemeResponseDto.setSchemeName(scheme.getSchemeName());
 		return schemeResponseDto;
 	}
@@ -179,7 +176,7 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
 		insuranceScheme.setMinAmount(requestDto.getMinAmount());
 		insuranceScheme.setMinPolicyTerm(requestDto.getMinPolicyTerm());
 		insuranceScheme.setProfitRatio(requestDto.getProfitRatio());
-		insuranceScheme.setRegistrationCommRatio(requestDto.getRegistrationCommRatio());
+		insuranceScheme.setRegistrationCommAmount(requestDto.getRegistrationCommAmount());
 		insuranceScheme.setActive(requestDto.isActive());
 		insuranceScheme.setSchemeName(requestDto.getSchemeName());
 		insuranceSchemeRepository.save(insuranceScheme);
@@ -297,7 +294,7 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
                 maxPolicyTerm, planId, schemeName, active, pageable);
 
         List<InsuranceSchemeResponseDto> content = schemesPage.getContent().stream()
-                .map(this::convertToDto)
+                .map(insuranceScheme->convertToDto(insuranceScheme))
                 .collect(Collectors.toList());
 
         return new PagedResponse<>(content, schemesPage.getNumber(), schemesPage.getSize(),
@@ -319,7 +316,7 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
         dto.setMinAge(scheme.getMinAge());
         dto.setMaxAge(scheme.getMaxAge());
         dto.setProfitRatio(scheme.getProfitRatio());
-        dto.setRegistrationCommRatio(scheme.getRegistrationCommRatio());
+        dto.setRegistrationCommAmount(scheme.getRegistrationCommAmount());
         dto.setInstallmentCommRatio(scheme.getInstallmentCommRatio());
         if (scheme.getSchemeImage() != null) {
             String base64Image = Base64.getEncoder().encodeToString(ImageUtil.decompressFile(scheme.getSchemeImage()));
@@ -334,7 +331,7 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
         Pageable pageable = PageRequest.of(page, size);
         Page<InsuranceScheme> schemePage = insuranceSchemeRepository.findByInsurancePlan_PlanId(planId, pageable);
 
-        return schemePage.map(this::convertToDto);
+        return schemePage.map(insuranceScheme->convertToDto(insuranceScheme));
     }
 
 	@Override

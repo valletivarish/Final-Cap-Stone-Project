@@ -163,9 +163,11 @@ const CommissionView = () => {
       direction,
       agentId,
       commissionType,
+      fromDate,
+      toDate,
     };
     fetchCommissions(params);
-  }, [page, size, sortBy, direction, agentId, commissionType,isVerified]);
+  }, [searchParams,isVerified]);
 
   if (error) {
     return <div>{error}</div>;

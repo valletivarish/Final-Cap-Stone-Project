@@ -13,6 +13,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -156,14 +159,13 @@ public class EmployeeController {
 			@RequestParam(name = "maxAmount", required = false) Double maxAmount,
 			@RequestParam(name = "startDate", defaultValue = "#{T(java.time.LocalDate).now().minusDays(30).toString()}") String startDate,
 			@RequestParam(name = "endDate", defaultValue = "#{T(java.time.LocalDate).now().toString()}") String endDate,
-			@RequestParam(name = "customerId", required = false) String customerId,
-			@RequestParam(name = "paymentId", required = false) Long paymentId) {
+			@RequestParam(name = "policyNo", required = false) Long policyNo) {
 
 		LocalDateTime fromDate = parseDate(startDate).atStartOfDay();
 		LocalDateTime toDate = parseDate(endDate).atTime(23, 59, 59);
 
 		PagedResponse<PaymentResponseDto> payments = paymentService.getAllPaymentsWithFilters(page, size, sortBy,
-				direction, minAmount, maxAmount, fromDate, toDate, customerId, paymentId);
+				direction, minAmount, maxAmount, fromDate, toDate, policyNo);
 		return new ResponseEntity<PagedResponse<PaymentResponseDto>>(payments, HttpStatus.OK);
 	}
 
@@ -254,6 +256,23 @@ public class EmployeeController {
 	@Operation(summary = "Deactivate Employee", description = "Mark an employee as inactive by their ID.")
 	public ResponseEntity<String> deactivateEmployee(@PathVariable(name = "employeeId") long employeeId) {
 		return new ResponseEntity<String>(employeeManagementService.deactivateEmployee(employeeId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/details")
+	@PreAuthorize("hasRole('EMPLOYEE')")
+	@Operation(summary = "Get Current Employee Details", description = "Retrieve details of the currently logged-in employee.")
+	public ResponseEntity<Map<String, Object>> getEmployeeDetails(){
+		String currentUserEmail = getCurrentUserEmail();
+		Map<String, Object> userDetails=employeeManagementService.getUserByEmail(currentUserEmail);
+		return new ResponseEntity<>(userDetails, HttpStatus.OK);
+	}
+	
+	private String getCurrentUserEmail() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+			return ((UserDetails) authentication.getPrincipal()).getUsername();
+		}
+		return null;
 	}
 
 }

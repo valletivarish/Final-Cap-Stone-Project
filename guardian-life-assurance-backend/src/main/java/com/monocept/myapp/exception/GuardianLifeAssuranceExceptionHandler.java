@@ -74,6 +74,10 @@ public class GuardianLifeAssuranceExceptionHandler {
 				.forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<GuardianLifeAssuranceErrorResponse> handleGenericException(IllegalArgumentException exc) {
+        return buildErrorResponse(exc, HttpStatus.BAD_REQUEST);
+    }
 	
 
 	@ExceptionHandler

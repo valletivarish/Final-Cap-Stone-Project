@@ -12,7 +12,6 @@ import com.monocept.myapp.dto.InsuranceSchemeRequestDto;
 import com.monocept.myapp.dto.InsuranceSchemeResponseDto;
 import com.monocept.myapp.dto.InterestCalculatorRequestDto;
 import com.monocept.myapp.dto.InterestCalculatorResponseDto;
-import com.monocept.myapp.dto.ReferralEmailRequestDto;
 import com.monocept.myapp.entity.InsuranceScheme;
 import com.monocept.myapp.util.PagedResponse;
 

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { getAgentPolicies } from "../../../../../services/agentServices"; 
+import { getAgentPolicies } from "../../../../../services/agentServices";
 import Table from "../../../../../sharedComponents/Table/Table";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { showToastError } from "../../../../../utils/toast/Toast";
 import { sanitizePolicyData } from "../../../../../utils/helpers/SanitizeData";
-import '../../../../Policies/ViewPolicies.css'
+import "../../../../Policies/ViewPolicies.css";
+import { verifyAgent } from "../../../../../services/authServices";
 
-
-const ViewAgentPolicies = () => { 
+const ViewAgentPolicies = () => {
   const [policies, setPolicies] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [error, setError] = useState(null);
@@ -16,20 +16,52 @@ const ViewAgentPolicies = () => {
   const sortBy = searchParams.get("sortBy") || "policyNo";
   const direction = searchParams.get("direction") || "asc";
 
-  const [customerName, setCustomerName] = useState(searchParams.get("customerName") || "");
+  const [customerName, setCustomerName] = useState(
+    searchParams.get("customerName") || ""
+  );
   const [city, setCity] = useState(searchParams.get("city") || "");
   const [state, setState] = useState(searchParams.get("state") || "");
   const [sortField, setSortField] = useState(sortBy);
   const [sortDirection, setSortDirection] = useState(direction);
   const keysToBeIncluded = [
-    "customerName", "customerCity", "customerState", 
-    "policyNo", "insurancePlan", "insuranceScheme", 
-    "maturityDate", "premiumType", "premiumAmount", 
-    "sumAssured", "profitRatio", "policyStatus"
+    "customerName",
+    "customerCity",
+    "customerState",
+    "policyNo",
+    "insurancePlan",
+    "insuranceScheme",
+    "maturityDate",
+    "premiumType",
+    "premiumAmount",
+    "sumAssured",
+    "profitRatio",
+    "policyStatus",
   ];
+
+  const [isAgent, setIsAgent] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const verifyAgentAndNavigate = async () => {
+      try {
+        const response = await verifyAgent();
+        if (!response) {
+          navigate("/");
+          return;
+        } else {
+          setIsAgent(true);
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    };
+    verifyAgentAndNavigate();
+  }, []);
 
   useEffect(() => {
     const fetchPolicies = async () => {
+      if(!isAgent){
+        return;
+      }
       try {
         const params = {
           page,
@@ -42,8 +74,11 @@ const ViewAgentPolicies = () => {
         };
 
         const response = await getAgentPolicies(params);
-        console.log("view agent policies",response)
-        const sanitizedPolicies = sanitizePolicyData(response, keysToBeIncluded);
+        console.log("view agent policies", response);
+        const sanitizedPolicies = sanitizePolicyData(
+          response,
+          keysToBeIncluded
+        );
         setPolicies(sanitizedPolicies);
       } catch (error) {
         setError("Failed to fetch policies");
@@ -52,7 +87,7 @@ const ViewAgentPolicies = () => {
     };
 
     fetchPolicies();
-  }, [searchParams]);
+  }, [searchParams,isAgent]);
 
   const handleSearch = () => {
     const currentParams = Object.fromEntries(searchParams);
@@ -72,36 +107,39 @@ const ViewAgentPolicies = () => {
   };
 
   return (
-    <div className="view-policies-container"> {/* Updated container class */}
-      <h1>View Agent Policies</h1>
-
-      <div className="view-policies-filters">
-        <select
-          value={sortField}
-          onChange={(e) => setSortField(e.target.value)}
-        >
-          <option value="policyNo">Policy Number</option>
-          <option value="maturityDate">Maturity Date</option>
-        </select>
-        <select
-          value={sortDirection}
-          onChange={(e) => setSortDirection(e.target.value)}
-        >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
-        <button onClick={handleSearch}>Search</button>
-        <button onClick={handleReset}>Reset</button>
-      </div>
-
-
-      <Table
-        data={policies}
-        searchParams={searchParams}
-        setSearchParams={setSearchParams}
-      />
-    </div>
+    <>
+      {isAgent && (
+        <div className="view-policies-container">
+          {" "}
+          {/* Updated container class */}
+          <h1>View Agent Policies</h1>
+          <div className="view-policies-filters">
+            <select
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value)}
+            >
+              <option value="policyNo">Policy Number</option>
+              <option value="maturityDate">Maturity Date</option>
+            </select>
+            <select
+              value={sortDirection}
+              onChange={(e) => setSortDirection(e.target.value)}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+            <button onClick={handleSearch}>Search</button>
+            <button onClick={handleReset}>Reset</button>
+          </div>
+          <Table
+            data={policies}
+            searchParams={searchParams}
+            setSearchParams={setSearchParams}
+          />
+        </div>
+      )}
+    </>
   );
 };
 
-export default ViewAgentPolicies; 
+export default ViewAgentPolicies;
