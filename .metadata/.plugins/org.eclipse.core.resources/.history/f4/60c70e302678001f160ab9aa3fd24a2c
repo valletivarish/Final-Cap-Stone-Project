@@ -1,0 +1,11 @@
+package com.monocept.myapp.service;
+
+import com.monocept.myapp.entity.EmailVerificationToken;
+
+public interface EmailVerificationTokenService {
+
+	EmailVerificationToken createVerificationToken(String email);
+
+	EmailVerificationToken validateToken(String token);
+
+}

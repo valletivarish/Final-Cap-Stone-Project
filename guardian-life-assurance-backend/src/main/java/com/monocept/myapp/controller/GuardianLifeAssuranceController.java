@@ -1,5 +1,8 @@
 package com.monocept.myapp.controller;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.monocept.myapp.dto.InsurancePlanResponseDto;
 import com.monocept.myapp.dto.StateResponseDto;
+import com.monocept.myapp.enums.NomineeRelationship;
 import com.monocept.myapp.service.InsuranceManagementService;
 import com.monocept.myapp.service.StateAndCityManagementService;
 import com.monocept.myapp.util.PagedResponse;
@@ -63,5 +67,11 @@ public class GuardianLifeAssuranceController {
 	public ResponseEntity<Long> getPlanCount() {
 		return new ResponseEntity<Long>(insuranceManagementService.getPlanCount(), HttpStatus.OK);
 	}
+	
+	@GetMapping("/nominees/relationships")
+	@PreAuthorize("hasRole('CUSTOMER')")
+    public List<NomineeRelationship> getNomineeRelationships() {
+        return Arrays.asList(NomineeRelationship.values());
+    }
 
 }

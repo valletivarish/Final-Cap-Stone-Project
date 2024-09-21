@@ -10,7 +10,6 @@ import { getCustomerDetails } from "../../services/customerServices";
 const Login = ({ setRole }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
   const [view, setView] = useState("login");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [newPassword, setNewPassword] = useState("");
@@ -66,7 +65,6 @@ const Login = ({ setRole }) => {
 
       showToastSuccess("Login successful!");
     } catch (error) {
-      setError(error.response?.data?.message || "An error occurred. Please try again.");
       showToastError(error.message || "An error occurred. Please try again.");
     }
   };
@@ -97,7 +95,7 @@ const Login = ({ setRole }) => {
       showToastSuccess("Password reset successful!");
       setView("login");
     } catch (error) {
-      showToastError(error.response?.data?.message || "An error occurred. Please try again.");
+      showToastError(error.message || "An error occurred. Please try again.");
     }
   };
 
@@ -107,7 +105,6 @@ const Login = ({ setRole }) => {
         {view === "login" && (
           <>
             <h2 className="login-header">Login</h2>
-            {error && <p className="login-error">{error}</p>}
             <Form onSubmit={handleLogin}>
               <Form.Group className="mb-3" controlId="formUsername">
                 <Form.Control

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.monocept.myapp.enums.PolicyStatus;
 import com.monocept.myapp.enums.PremiumType;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
@@ -32,5 +31,6 @@ public class PolicyAccountResponseDto {
 	private PolicyStatus policyStatus;
 	private List<PaymentResponseDto> payments;
 	private List<InstallmentResponseDto> installments;
+	private List<NomineeResponseDto> nominees;
 
 }

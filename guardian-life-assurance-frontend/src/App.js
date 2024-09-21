@@ -58,6 +58,7 @@ import CreateQueryForm from "./components/CustomerDashboard/customerComponents/Q
 import DocumentUpload from "./components/CustomerDashboard/customerComponents/Documents/DocumentUpload";
 import ViewAgentEarnings from "./components/AgentDashboard/agentComponents/Commissions/ViewAgentEarnings";
 import CommissionWithdrawal from "./components/AgentDashboard/agentComponents/Commissions/CommissionWithdrawal";
+import VerifyEmail from "./components/ReActivateAccount/VerifyEmail";
 function App() {
   const [role, setRole] = useState(null);
   const [refreshNavbar, setRefreshNavbar] = useState(false);
@@ -165,6 +166,7 @@ function App() {
         <Route path="/register" element={<CustomerRegistration />} />
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/cancel" element={<CancelPage />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
     </Routes>
   );
 }

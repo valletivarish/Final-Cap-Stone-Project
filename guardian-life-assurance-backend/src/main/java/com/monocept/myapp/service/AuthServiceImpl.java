@@ -20,12 +20,17 @@ import com.monocept.myapp.dto.JwtResponse;
 import com.monocept.myapp.dto.LoginDto;
 import com.monocept.myapp.dto.RegisterDto;
 import com.monocept.myapp.entity.Admin;
+import com.monocept.myapp.entity.Agent;
 import com.monocept.myapp.entity.Customer;
+import com.monocept.myapp.entity.EmailVerificationToken;
+import com.monocept.myapp.entity.Employee;
 import com.monocept.myapp.entity.Role;
 import com.monocept.myapp.entity.User;
 import com.monocept.myapp.exception.GuardianLifeAssuranceApiException;
 import com.monocept.myapp.repository.AdminRepository;
+import com.monocept.myapp.repository.AgentRepository;
 import com.monocept.myapp.repository.CustomerRepository;
+import com.monocept.myapp.repository.EmployeeRepository;
 import com.monocept.myapp.repository.RoleRepository;
 import com.monocept.myapp.repository.UserRepository;
 
@@ -37,8 +42,19 @@ public class AuthServiceImpl implements AuthService {
 	private RoleRepository roleRepository;
 	private PasswordEncoder passwordEncoder;
 	private AdminRepository adminRepository;
+
+	@Autowired
+	private EmailService emailService;
+
+	@Autowired
+	private EmailVerificationTokenService emailVerificationTokenService;
 	@Autowired
 	private CustomerRepository customerRepository;
+
+	@Autowired
+	private AgentRepository agentRepository;
+	@Autowired
+	private EmployeeRepository employeeRepository;
 
 	public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository,
 			RoleRepository roleRepository, PasswordEncoder passwordEncoder, AdminRepository adminRepository) {
@@ -58,10 +74,69 @@ public class AuthServiceImpl implements AuthService {
 
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		String usernameOrEmail = userDetails.getUsername();
+		User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+				.orElseThrow(() -> new GuardianLifeAssuranceApiException(HttpStatus.NOT_FOUND, "User not found"));
 		String role = userDetails.getAuthorities().stream().map(authority -> authority.getAuthority()).findFirst()
 				.orElse("ROLE_CUSTOMER");
 
+		try {
+			checkActivationStatus(user);
+		} catch (GuardianLifeAssuranceApiException e) {
+			EmailVerificationToken token = emailVerificationTokenService.createVerificationToken(user.getEmail());
+			String verificationUrl = "http://localhost:3000/verify-email?token=" + token.getToken();
+			emailService.sendVerificationEmail(verificationUrl, user.getEmail());
+
+			throw new GuardianLifeAssuranceApiException(HttpStatus.FORBIDDEN,
+					"Your account is inactive. A verification link has been sent to your email.");
+		}
+
 		return new JwtResponse(usernameOrEmail, role);
+	}
+
+	private void checkActivationStatus(User user) {
+		if (user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"))) {
+			Admin admin = adminRepository.findByUser(user);
+			if (admin == null) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.BAD_REQUEST,
+						"No admin account associated with this user.");
+			}
+			if (!admin.isActive()) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.FORBIDDEN,
+						"Your admin account is inactive. Please contact support.");
+			}
+		} else if (user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_AGENT"))) {
+			Agent agent = agentRepository.findByUser(user);
+			if (agent == null) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.BAD_REQUEST,
+						"No agent account associated with this user.");
+			}
+			if (!agent.isActive()) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.FORBIDDEN,
+						"Your agent account is inactive. Please contact support.");
+			}
+		} else if (user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_EMPLOYEE"))) {
+			Employee employee = employeeRepository.findByUser(user);
+			if (employee == null) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.BAD_REQUEST,
+						"No employee account associated with this user.");
+			}
+			if (!employee.isActive()) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.FORBIDDEN,
+						"Your employee account is inactive. Please contact support.");
+			}
+		} else if (user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_CUSTOMER"))) {
+			Customer customer = customerRepository.findByUser(user);
+			if (customer == null) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.BAD_REQUEST,
+						"No customer account associated with this user.");
+			}
+			if (!customer.isActive()) {
+				throw new GuardianLifeAssuranceApiException(HttpStatus.FORBIDDEN,
+						"Your customer account is inactive. Please contact support.");
+			}
+		} else {
+			throw new GuardianLifeAssuranceApiException(HttpStatus.BAD_REQUEST, "Unknown role detected for the user.");
+		}
 	}
 
 	@Override

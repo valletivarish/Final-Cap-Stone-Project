@@ -1,6 +1,8 @@
 package com.monocept.myapp.service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -28,6 +30,8 @@ import com.monocept.myapp.dto.CustomerRequestDto;
 import com.monocept.myapp.dto.CustomerResponseDto;
 import com.monocept.myapp.dto.CustomerSideQueryRequestDto;
 import com.monocept.myapp.dto.InstallmentResponseDto;
+import com.monocept.myapp.dto.NomineeDto;
+import com.monocept.myapp.dto.NomineeResponseDto;
 import com.monocept.myapp.dto.PaymentResponseDto;
 import com.monocept.myapp.dto.PolicyAccountRequestDto;
 import com.monocept.myapp.dto.PolicyAccountResponseDto;
@@ -44,6 +48,7 @@ import com.monocept.myapp.entity.Employee;
 import com.monocept.myapp.entity.Installment;
 import com.monocept.myapp.entity.InsuranceScheme;
 import com.monocept.myapp.entity.InsuranceSetting;
+import com.monocept.myapp.entity.Nominee;
 import com.monocept.myapp.entity.Payment;
 import com.monocept.myapp.entity.PolicyAccount;
 import com.monocept.myapp.entity.Role;
@@ -71,6 +76,7 @@ import com.monocept.myapp.repository.EmployeeRepository;
 import com.monocept.myapp.repository.InstallmentRepository;
 import com.monocept.myapp.repository.InsuranceSchemeRepository;
 import com.monocept.myapp.repository.InsuranceSettingRepository;
+import com.monocept.myapp.repository.NomineeRepository;
 import com.monocept.myapp.repository.PaymentRepository;
 import com.monocept.myapp.repository.PolicyRepository;
 import com.monocept.myapp.repository.QueryRepository;
@@ -121,6 +127,10 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 
 	@Autowired
 	private InstallmentRepository installmentRepository;
+	
+	@Autowired
+	private NomineeRepository nomineeRepository;
+	
 	@Autowired
 	private TaxSettingRepository taxSettingRepository;
 	@Autowired
@@ -419,6 +429,7 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 	@Override
 	@Transactional
 	public Long processPolicyPurchase(PolicyAccountRequestDto accountRequestDto, long customerId) {
+		System.out.println(accountRequestDto);
 		TaxSetting taxSetting = taxSettingRepository.findTopByOrderByUpdatedAtDesc();
 		InsuranceSetting insuranceSetting = insuranceSettingRepository.findTopByOrderByUpdatedAtDesc();
 
@@ -438,6 +449,7 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 
 		PolicyAccount policyAccount = createPolicyAccount(accountRequestDto, customer, insuranceScheme, taxSetting,
 				insuranceSetting, installmentAmount);
+		handleNominees(accountRequestDto.getNominees(), policyAccount);
 
 		if (accountRequestDto.getAgentId() != null && accountRequestDto.getAgentId() != 0) {
 			handleAgentCommission(accountRequestDto.getAgentId(), insuranceScheme, policyAccount);
@@ -539,6 +551,24 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 
 		return policyRepository.save(policyAccount);
 	}
+	
+	private void handleNominees(List<NomineeDto> nomineeDtos, PolicyAccount policyAccount) {
+	    if (nomineeDtos == null || nomineeDtos.isEmpty()) {
+	        throw new GuardianLifeAssuranceException("At least one nominee must be provided");
+	    }
+
+	    List<Nominee> nominees = nomineeDtos.stream().map(nomineeDto -> {
+	        Nominee nominee = new Nominee();
+	        nominee.setNomineeName(nomineeDto.getNomineeName());
+	        nominee.setRelationship(nomineeDto.getRelationship());
+	        nominee.setPolicyAccount(policyAccount);  
+	        return nominee;
+	    }).collect(Collectors.toList());
+
+	    nomineeRepository.saveAll(nominees);
+
+	    policyAccount.setNominees(nominees);
+	}
 
 	private void handlePaymentsAndInstallments(PolicyAccount policyAccount, double installmentAmount, long months,
 			long policyTerm, String chargeId) {
@@ -622,6 +652,12 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 		policyDto.setPremiumAmount(policy.getPremiumAmount());
 		policyDto.setProfitRatio(policy.getInsuranceScheme().getProfitRatio());
 		policyDto.setSumAssured(policy.getSumAssured());
+		policyDto.setNominees(policy.getNominees().stream().map(nominee->{
+			NomineeResponseDto nomineeResponseDto = new NomineeResponseDto();
+			nomineeResponseDto.setNomineeName(nominee.getNomineeName());
+			nomineeResponseDto.setRelationship(nominee.getRelationship());
+			return nomineeResponseDto;
+		}).collect(Collectors.toList()));
 
 
 		List<InstallmentResponseDto> installmentDtos = policy.getInstallments().stream()
@@ -639,9 +675,13 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 		InstallmentResponseDto installmentDto = new InstallmentResponseDto();
 		installmentDto.setInstallmentId(installment.getInstallmentId());
 		installmentDto.setDueDate(installment.getDueDate());
-		installmentDto.setAmountDue(installment.getAmountDue());
+		Double amountDue = installment.getAmountDue() != null ? installment.getAmountDue() : 0.0;
+	    installmentDto.setAmountDue(BigDecimal.valueOf(amountDue).setScale(2, RoundingMode.HALF_UP).doubleValue());
+//		installmentDto.setAmountDue(installment.getAmountDue());
 		installmentDto.setPaymentDate(installment.getPaymentDate());
-		installmentDto.setAmountPaid(installment.getAmountPaid());
+		Double amountPaid = installment.getAmountPaid() != null ? installment.getAmountPaid() : 0.0;
+	    installmentDto.setAmountPaid(BigDecimal.valueOf(amountPaid).setScale(2, RoundingMode.HALF_UP).doubleValue());
+//		installmentDto.setAmountPaid(installment.getAmountPaid());
 		installmentDto.setStatus(installment.getStatus());
 		return installmentDto;
 	}

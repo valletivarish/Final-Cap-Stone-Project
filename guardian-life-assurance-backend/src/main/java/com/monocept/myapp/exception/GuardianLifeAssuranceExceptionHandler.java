@@ -51,9 +51,14 @@ public class GuardianLifeAssuranceExceptionHandler {
 		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 	}
 	@ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<GuardianLifeAssuranceErrorResponse> handleGenericException(BadCredentialsException exc) {
-        return buildErrorResponse(exc, HttpStatus.BAD_REQUEST);
-    }
+	public ResponseEntity<GuardianLifeAssuranceErrorResponse> handleBadCredentialsException(BadCredentialsException exc) {
+	    GuardianLifeAssuranceErrorResponse error = new GuardianLifeAssuranceErrorResponse();
+	    error.setStatus(HttpStatus.UNAUTHORIZED.value());
+	    error.setMessage("Invalid username or password. Please check your credentials and try again.");
+	    error.setTimeStamp(System.currentTimeMillis());
+	    return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+	}
+
 	private ResponseEntity<GuardianLifeAssuranceErrorResponse> buildErrorResponse(Exception exc, HttpStatus status) {
         return buildErrorResponse(exc, status, exc.getMessage());
     }
