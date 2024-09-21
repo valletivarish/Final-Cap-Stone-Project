@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.monocept.myapp.dto.ChangePasswordRequestDto;
@@ -25,10 +26,13 @@ import com.monocept.myapp.dto.JwtResponse;
 import com.monocept.myapp.dto.LoginDto;
 import com.monocept.myapp.dto.RegisterDto;
 import com.monocept.myapp.dto.ResetPasswordRequestDto;
+import com.monocept.myapp.entity.EmailVerificationToken;
+import com.monocept.myapp.entity.User;
 import com.monocept.myapp.security.JwtTokenProvider;
 import com.monocept.myapp.service.AuthService;
 import com.monocept.myapp.service.CustomerManagementService;
 import com.monocept.myapp.service.EmailService;
+import com.monocept.myapp.service.EmailVerificationTokenService;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -51,7 +55,11 @@ public class AuthController {
 	private EmailService emailService;
 
 	@Autowired
+	private EmailVerificationTokenService emailVerificationTokenService;
+	
+	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
+	
 
 	@PostMapping("/customer-registration")
 	@Operation(summary = "Register a Customer", description = "Create a new customer account.")
@@ -187,4 +195,17 @@ public class AuthController {
 		}
 		return ResponseEntity.ok(false);
 	}
+	
+	
+	@GetMapping("/verify-email")
+	public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
+	    EmailVerificationToken verificationToken = emailVerificationTokenService.validateToken(token);
+	    User user = verificationToken.getUser();
+	    emailVerificationTokenService.activateUserByRole(user);
+	    emailVerificationTokenService.deleteToken(verificationToken);
+
+	    return ResponseEntity.ok("Account verified successfully");
+	}
+
+
 }

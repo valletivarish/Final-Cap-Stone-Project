@@ -18,4 +18,6 @@ public interface EmailService {
 
 	void sendQueryResponseEmail(Employee employee, CustomerQuery query);
 
+	void sendVerificationEmail(String verificationUrl, String email);
+
 }

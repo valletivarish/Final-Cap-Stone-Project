@@ -1,5 +1,7 @@
 package com.monocept.myapp.entity;
 
+import com.monocept.myapp.enums.NomineeRelationship;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -26,8 +29,8 @@ public class Nominee {
     private String nomineeName;
 
     @Column(name = "relationship")
-    @NotEmpty(message = "Relationship is required")
-    private String relationship;
+    @NotNull(message = "Nominee relationship is required")
+    private NomineeRelationship relationship;
     
     @ManyToOne
     @JoinColumn(name = "policy_no", referencedColumnName = "policyNo")

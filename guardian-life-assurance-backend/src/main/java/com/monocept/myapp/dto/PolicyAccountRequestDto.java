@@ -1,5 +1,7 @@
 package com.monocept.myapp.dto;
 
+import java.util.List;
+
 import com.monocept.myapp.enums.PremiumType;
 
 import lombok.Data;
@@ -13,6 +15,7 @@ public class PolicyAccountRequestDto {
 	private PremiumType premiumType;
 	private Long policyTerm;
 	private Double premiumAmount;
+	private List<NomineeDto> nominees;
 	
 	
 //	//Claim

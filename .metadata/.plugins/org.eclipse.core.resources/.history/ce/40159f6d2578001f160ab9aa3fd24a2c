@@ -1,0 +1,13 @@
+package com.monocept.myapp.service;
+
+import com.monocept.myapp.entity.EmailVerificationToken;
+
+public class EmailVerificationTokenServiceImpl implements EmailVerificationTokenService {
+
+	@Override
+	public EmailVerificationToken createVerificationToken(String email) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

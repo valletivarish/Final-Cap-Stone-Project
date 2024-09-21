@@ -74,14 +74,14 @@ const PolicyDetailPage = () => {
       const data = await fetcByPolicyId(customerId, policyId);
       setPolicyData(data);
       const today = new Date().toISOString().split("T")[0];
-      if (data.maturityDate === today && policyData.policyStatus==="COMPLETE") {
+      if (
+        data.maturityDate === today &&
+        policyData.policyStatus === "COMPLETE"
+      ) {
         setIsMaturityEnabled(true);
       }
 
-      if (
-        data.policyStatus === "PENDING" ||
-        data.policyStatus === "COMPLETE"
-      ) {
+      if (data.policyStatus === "PENDING" || data.policyStatus === "COMPLETE") {
         setIsClaimEnabled(true);
       }
     } catch (error) {
@@ -213,6 +213,7 @@ const PolicyDetailPage = () => {
               </tr>
             </tbody>
           </table>
+          
           <div
             className="policydetail-action-buttons"
             style={{ display: "flex", justifyContent: "center" }}
@@ -240,13 +241,13 @@ const PolicyDetailPage = () => {
                 bottom: "auto",
                 marginRight: "-50%",
                 transform: "translate(-50%, -50%)",
-                width: "40%", 
-                padding: "20px", 
-                borderRadius: "10px", 
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+                width: "40%",
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               },
               overlay: {
-                backgroundColor: "rgba(0, 0, 0, 0.75)", 
+                backgroundColor: "rgba(0, 0, 0, 0.75)",
               },
             }}
           >
@@ -353,7 +354,23 @@ const PolicyDetailPage = () => {
               </div>
             </form>
           </Modal>
-
+          <h2>Nominee Details</h2>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Nominee Name</th>
+                <th>Relationship</th>
+              </tr>
+            </thead>
+            <tbody>
+              {policyData.nominees.map((nominee, index) => (
+                <tr key={index}>
+                  <td>{nominee.nomineeName}</td>
+                  <td>{nominee.relationship}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <h2>Premium Details</h2>
           <table className="table">
             <tbody>

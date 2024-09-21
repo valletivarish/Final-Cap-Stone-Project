@@ -5,6 +5,7 @@ import {
   fetchSchemeImage,
   calculateInterest,
 } from "../../../../services/insuranceManagementServices";
+import { getRealationships } from "../../../../services/gaurdianLifeAssuranceServices";
 import { fetchCustomerAge } from "../../../../services/customerServices";
 import { initiateCheckout } from "../../../../services/insuranceManagementServices";
 import "./SchemePage.css";
@@ -31,10 +32,43 @@ const SchemePage = () => {
   const [calculatedInstallment, setCalculatedInstallment] = useState(null);
   const [premiumType, setPremiumType] = useState("MONTHLY");
   const { customerId } = useParams();
+  const [nomineeName, setNomineeName] = useState("");
+  const [relationship, setRelationship] = useState("");
+  const [relationships, setRelationships] = useState([]);
+  const [nominees, setNominees] = useState([]);
   const [unverifiedDocuments, setUnverifiedDocuments] = useState([]);
 
   const navigate = useNavigate();
   const [isCustomer, setIsCustomer] = useState(false);
+
+  const fetchRelationships = async () => {
+    try {
+      const data = await getRealationships();
+      setRelationships(data);
+    } catch (error) {
+      console.error("Error fetching relationships", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRelationships();
+  }, []);
+
+  const handleAddNominee = () => {
+    if (!nomineeName || !relationship) {
+      showToastError("Nominee name and relationship are required.");
+      return;
+    }
+
+    const newNominee = {
+      nomineeName: nomineeName,
+      relationship,
+    };
+
+    setNominees([...nominees, newNominee]);
+    setNomineeName("");
+    setRelationship("");
+  };
 
   useEffect(() => {
     const verifyCustomerAndNavigate = async () => {
@@ -54,7 +88,7 @@ const SchemePage = () => {
   }, []);
 
   useEffect(() => {
-    if(!isCustomer){
+    if (!isCustomer) {
       return;
     }
     fetchCustomerDetails();
@@ -82,7 +116,6 @@ const SchemePage = () => {
   const fetchSchemes = async () => {
     setLoading(true);
     try {
-      
       const schemeData = await fetchSchemesByPlanId(planId, currentPage, 1);
       setSchemes(schemeData.content);
       setTotalPages(schemeData.totalPages);
@@ -109,8 +142,10 @@ const SchemePage = () => {
 
   const handleCalculate = async (schemeId) => {
     try {
-      if(!validator.isDecimal(investmentAmount,{decimal_digits:'0,2'})){
-        showToastError("Please enter a valid number with up to two decimal places.");
+      if (!validator.isDecimal(investmentAmount, { decimal_digits: "0,2" })) {
+        showToastError(
+          "Please enter a valid number with up to two decimal places."
+        );
       }
       const interestData = await calculateInterest({
         schemeId,
@@ -125,6 +160,10 @@ const SchemePage = () => {
   };
 
   const handleCheckout = async (scheme) => {
+    if (nominees.length === 0) {
+      showToastError("At least one nominee must be added.");
+      return;
+    }
     const requestData = {
       insuranceSchemeId: scheme.schemeId,
       premiumType: premiumType,
@@ -136,6 +175,7 @@ const SchemePage = () => {
       assuredAmount: calculatedInstallment.assuredAmount,
       customerId,
       agentId: agentId ? agentId : 0,
+      nominees: nominees,
     };
 
     try {
@@ -165,11 +205,11 @@ const SchemePage = () => {
   };
   const sanitizeString = (str) => {
     return str
-        .toLowerCase()
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-};
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   return (
     <div className="scheme-page">
@@ -224,19 +264,8 @@ const SchemePage = () => {
                 requirement.
               </p>
             )}
-            {isEligible(scheme) && unverifiedDocuments.length > 0 && (
-              <div className="documents-message">
-                <p>
-                  The following documents are required and not yet verified:
-                </p>
-                <ul>
-                  {unverifiedDocuments.map((doc, index) => (
-                    <li key={index}>{sanitizeString(doc)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {isEligible(scheme) && unverifiedDocuments.length === 0 && (
+
+            {isEligible(scheme) && (
               <div className="investment-inputs">
                 <table>
                   <tbody>
@@ -338,12 +367,78 @@ const SchemePage = () => {
                         </tr>
                       </tbody>
                     </table>
+
+                    {unverifiedDocuments.length > 0 && (
+                      <div className="documents-list">
+                        <h4>Documents Required</h4>
+                        <ul>
+                          {unverifiedDocuments.map((doc, index) => (
+                            <li key={index}>{sanitizeString(doc)}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="nominee-section">
+                      <h3>Add Nominee</h3>
+                      <div className="nominee-inputs">
+                        <input
+                          type="text"
+                          placeholder="Nominee Name"
+                          value={nomineeName}
+                          onChange={(e) => setNomineeName(e.target.value)}
+                        />
+                        <select
+                          value={relationship}
+                          onChange={(e) => setRelationship(e.target.value)}
+                        >
+                          <option value="">Select Relationship</option>
+                          {relationships.map((rel, index) => (
+                            <option key={index} value={rel}>
+                              {rel}
+                            </option>
+                          ))}
+                        </select>
+                        <button onClick={handleAddNominee}>Add Nominee</button>
+                      </div>
+
+                      {/* Show Added Nominees */}
+                      <div className="nominee-list">
+                        <h4>Added Nominees:</h4>
+                        {nominees.length > 0 ? (
+                          <ul>
+                            {nominees.map((nominee, index) => (
+                              <li key={index}>
+                                {nominee.nomineeName} ({nominee.relationship})
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No nominees added yet.</p>
+                        )}
+                      </div>
+                    </div>
+                    
                     <button
                       className="button proceed"
                       onClick={() => handleCheckout(scheme)}
+                      disabled={
+                        unverifiedDocuments.length > 0 || nominees.length === 0
+                      }
                     >
                       Proceed to Checkout
                     </button>
+                    {unverifiedDocuments.length > 0 && (
+                      <p className="disabled-message">
+                        Please verify the required documents to proceed.
+                      </p>
+                    )}
+                    {nominees.length === 0 &&
+                      unverifiedDocuments.length === 0 && (
+                        <p className="disabled-message">
+                          Please add at least one nominee to proceed.
+                        </p>
+                      )}
                   </div>
                 )}
               </div>

@@ -1,6 +1,7 @@
 package com.monocept.myapp.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,23 @@ public class StripeService {
 	        metadata.put("premiumAmount", requestData.get("premiumAmount").toString());
 	        metadata.put("customerId", requestData.get("customerId").toString());
 	        metadata.put("agentId", requestData.get("agentId").toString());
+	        Object nomineeObject = requestData.get("nominees");
+	        System.out.println(nomineeObject);
+	        if (nomineeObject instanceof List) {
+	            List<?> rawNominees = (List<?>) nomineeObject;
+	            for (int i = 0; i < rawNominees.size(); i++) {
+	                Object nomineeObjectItem = rawNominees.get(i);
+	                if (nomineeObjectItem instanceof Map) {
+	                    Map<?, ?> rawNominee = (Map<?, ?>) nomineeObjectItem;
+	                    if (rawNominee.containsKey("nomineeName") && rawNominee.containsKey("relationship")) {
+	                        String nomineeName = rawNominee.get("nomineeName").toString();
+	                        String nomineeRelationship = rawNominee.get("relationship").toString();
+	                        metadata.put("nomineeName" + i, nomineeName);
+	                        metadata.put("nomineeRelationship" + i, nomineeRelationship);
+	                    }
+	                }
+	            }
+	        }
 	        sessionBuilder.putAllMetadata(metadata);
 
 	        SessionCreateParams params = sessionBuilder.build();

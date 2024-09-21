@@ -1,5 +1,8 @@
 package com.monocept.myapp.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.itextpdf.text.DocumentException;
 import com.monocept.myapp.dto.InstallmentPaymentRequestDto;
+import com.monocept.myapp.dto.NomineeDto;
 import com.monocept.myapp.dto.PolicyAccountRequestDto;
+import com.monocept.myapp.enums.NomineeRelationship;
 import com.monocept.myapp.enums.PremiumType;
 import com.monocept.myapp.service.CustomerManagementService;
 import com.monocept.myapp.service.InstallmentService;
@@ -48,7 +53,33 @@ public class CheckoutController {
 		 if (!(requestBody.get("requestData") instanceof Map)) {
 	            return ResponseEntity.badRequest().body("Invalid request data format.");
 	        }
-		Map<String, Object> requestData = (Map<String, Object>) requestBody.get("requestData");
+		 Object requestDataObj = requestBody.get("requestData");
+		 Map<String, Object> requestData = null;
+
+		 if (requestDataObj instanceof Map<?, ?>) {
+		     Map<?, ?> rawMap = (Map<?, ?>) requestDataObj;
+		     
+		     boolean isValid = true;
+		     for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+		            if (!(entry.getKey() instanceof String)) {
+		                isValid = false;
+		                break;
+		            }
+		        }
+
+		     if (isValid) {
+		    	 requestData = new HashMap<>();
+		            for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+		                String keyStr = (String) entry.getKey();
+		                Object value = entry.getValue();
+		                requestData.put(keyStr, value);
+		            }
+		     }else {
+		         throw new IllegalArgumentException("Invalid request data format.");
+		     }
+		 } else {
+		     throw new IllegalArgumentException("Invalid request data format.");
+		 }
 
 		try {
 			Session session = stripeService.createCheckoutSession(amount, successUrl, cancelUrl, requestData);
@@ -104,6 +135,22 @@ public class CheckoutController {
 					String premiumAmount = session.getMetadata().get("premiumAmount");
 					String customerIdString = session.getMetadata().get("customerId");
 					String agentIdString = session.getMetadata().get("agentId");
+					System.out.println(session.getMetadata());
+					
+					List<NomineeDto> nominees = new ArrayList<>();
+	                int i = 0;
+	                while (session.getMetadata().containsKey("nomineeName" + i) &&
+	                       session.getMetadata().containsKey("nomineeRelationship" + i)) {
+	                    String nomineeName = session.getMetadata().get("nomineeName" + i);
+	                    String nomineeRelationship = session.getMetadata().get("nomineeRelationship" + i);
+
+	                    NomineeDto nominee = new NomineeDto();
+	                    nominee.setNomineeName(nomineeName);
+	                    nominee.setRelationship(NomineeRelationship.valueOf(nomineeRelationship));
+
+	                    nominees.add(nominee);
+	                    i++;
+	                }
 
 					PolicyAccountRequestDto accountRequestDto = new PolicyAccountRequestDto();
 					accountRequestDto.setInsuranceSchemeId(Long.parseLong(insuranceSchemeId));
@@ -112,6 +159,7 @@ public class CheckoutController {
 					accountRequestDto.setPremiumAmount(Double.parseDouble(premiumAmount));
 					accountRequestDto.setStripeToken(chargeId);
 					accountRequestDto.setAgentId(Long.parseLong(agentIdString));
+					accountRequestDto.setNominees(nominees);  
 
 					Long customerId = Long.parseLong(customerIdString);
 					Long policyId = customerManagementService.processPolicyPurchase(accountRequestDto, customerId);

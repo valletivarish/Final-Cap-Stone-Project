@@ -114,6 +114,8 @@ public class EmailServiceImpl implements EmailService {
 	    String customerFirstName = claim.getCustomer().getFirstName();
 	    String customerLastName = claim.getCustomer().getLastName();
 	    String customerEmail = claim.getCustomer().getUser().getEmail();
+	    double claimDeductionPercentage = claim.getPolicyAccount().getInsuranceSetting().getClaimDeductionPercentage()/100;
+	    double claimAmount=claim.getClaimAmount()-(claim.getClaimAmount()*(claimDeductionPercentage));
 
 	    String subject = "Guardian Life Assurance - Claim Approved";
 
@@ -126,7 +128,7 @@ public class EmailServiceImpl implements EmailService {
 		        + "Thank you for trusting Guardian Life Assurance with your insurance needs.\n\n"
 		        + "Best regards,\n"
 		        + "Guardian Life Assurance",
-		        customerFirstName, customerLastName, claim.getPolicyAccount().getPolicyNo(), claim.getClaimAmount()
+		        customerFirstName, customerLastName, claim.getPolicyAccount().getPolicyNo(), claimAmount
 		    );
 		    sendEmail(customerEmail, subject, body);
 		}
@@ -170,6 +172,24 @@ public class EmailServiceImpl implements EmailService {
 	    sendEmail(customerEmail,subject,emailMessage);
 		
 	}
+
+	@Override
+	public void sendVerificationEmail(String verificationUrl, String email) {
+	    String subject = "Guardian Life Assurance - Reactivate Your Account";
+	    
+	    String body = String.format(
+	        "Dear User,\n\n" +
+	        "Your account with Guardian Life Assurance has been deactivated. To regain access and reactivate your account, please verify your email address by clicking the link below:\n\n" +
+	        "%s\n\n" +
+	        "This link will expire in 15 minutes. If you did not request this action or believe this was a mistake, please contact our support team.\n\n" +
+	        "Thank you for your prompt attention to this matter.\n\n" +
+	        "Best regards,\n" +
+	        "Guardian Life Assurance Team", verificationUrl
+	    );
+
+	    sendEmail(email, subject, body);
+	}
+
 
 
 

@@ -781,3 +781,19 @@ export const rejectWithdrawal = async (withdrawalId) => {
     handleApiError(error);
   }
 };
+export const getRealationships = async () => {
+  try {
+    const token = getAuthToken();
+    const response = await axios.get(
+      `http://localhost:8080/guardian-life-assurance/nominees/relationships`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
