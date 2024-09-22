@@ -105,6 +105,7 @@ public class InstallmentServiceImpl implements InstallmentService {
         commission.setAgent(agent);
         commission.setAmount(commissionAmount);
         commission.setCommissionType(CommissionType.INSTALLMENT);
+        commission.setPolicyAccount(policyAccount);
 
         commissionRepository.save(commission);
         List<Commission> commissions = agent.getCommissions();

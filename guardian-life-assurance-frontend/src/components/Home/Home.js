@@ -5,9 +5,9 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import Swiper1 from "../../assets/images/swiper1.png"
-import Swiper2 from "../../assets/images/swiper.png"
-import Swiper3 from "../../assets/images/swiper2.png"
+import Swiper3 from "../../assets/images/swiper1.png"
+import Swiper1 from "../../assets/images/swiper.png"
+import Swiper2 from "../../assets/images/swiper2.png"
 import AboutUs from "../../assets/images/aboutUs.png"
 
 

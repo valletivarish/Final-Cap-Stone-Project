@@ -112,6 +112,7 @@ const AgentCommissionView = () => {
       const sanitizedData = sanitizeCommissionData(response, [
         "commissionId",
         "commissionType",
+        "policyNo",
         "issueDate",
         "amount",
       ]);

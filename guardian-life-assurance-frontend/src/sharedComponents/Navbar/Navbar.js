@@ -40,7 +40,7 @@ const Navbar = ({ role, setRole,refreshNavbar }) => {
     return plans
       .filter((plan) => plan.active)
       .map((plan) => (
-        <Link to={getRoleLink(`/plans/${plan.planId}`)} key={plan.planId}>
+        <Link to={getRoleLink(`/plans/${plan.planId}/schemes`)} key={plan.planId}>
           {plan.planName}
         </Link>
       ));

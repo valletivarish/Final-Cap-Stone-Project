@@ -44,7 +44,7 @@ const ViewSchemes = () => {
       try {
         const response = await getAllSchemes(params);
         const sanitizedData = sanitizeSchemeData(response, [
-          "schemeId", "schemeName", "planName", "active", "minAmount", "maxAmount", "schemeImage"
+          "schemeId", "schemeName", "planName", "minAmount", "maxAmount", "schemeImage", "active"
         ], handleShowMore);
         setSchemes(sanitizedData);
       } catch (err) {

@@ -8,6 +8,7 @@ import './AddAgent.css';
 import { getStateCount } from '../../../services/stateAndCityManagementService';
 import { Helper } from '../../../utils/helpers/Helper';
 import {verifyAdmin,verifyEmployee} from "../../../services/authServices"
+import { isStrongPassword } from 'validator';
 
 const AddAgent = () => {
   const [firstName, setFirstName] = useState('');
@@ -72,9 +73,9 @@ const AddAgent = () => {
       case 'email':
         error = isEmail(value) || required(value) ? 'Email is invalid.' : '';
         break;
-      case 'password':
-        error = required(value) ? 'Password is required.' : '';
-        break;
+        case 'password':
+          error = isStrongPassword(value) ? '' : isStrongPassword(value);
+          break;        
       case 'username':
         error = alphanumeric(value) || required(value) ? 'Username is invalid.' : '';
         break;

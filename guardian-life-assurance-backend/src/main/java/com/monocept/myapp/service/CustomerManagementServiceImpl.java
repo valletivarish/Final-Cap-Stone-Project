@@ -474,6 +474,7 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 	    commission.setAgent(agent);
 	    commission.setAmount(commissionAmount);
 	    commission.setCommissionType(CommissionType.REGISTRATION);
+	    commission.setPolicyAccount(policyAccount);
 	    commissionRepository.save(commission);
 
 	    List<Commission> commissions = agent.getCommissions();

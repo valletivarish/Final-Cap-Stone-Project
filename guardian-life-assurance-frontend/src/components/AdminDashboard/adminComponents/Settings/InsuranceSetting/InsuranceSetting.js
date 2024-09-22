@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./InsuranceSetting.css";
 import { createInsuranceSetting } from "../../../../../services/adminServices";
-import { showToastSuccess } from "../../../../../utils/toast/Toast";
+import { showToastError, showToastSuccess } from "../../../../../utils/toast/Toast";
 import { verifyAdmin } from "../../../../../services/authServices";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -35,6 +35,15 @@ const InsuranceSetting = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(claimDeduction<=0){
+      showToastError("Claim Deduction should be greater than 0");
+      return;
+    }
+    if(penaltyAmount<=0){
+      showToastError("Penalty Amount should be greater than 0");
+      return;
+      }
+
     try {
       const response = await createInsuranceSetting({
         claimDeduction,

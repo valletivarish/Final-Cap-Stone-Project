@@ -13,6 +13,8 @@ import {
   showToastSuccess,
 } from "../../../../utils/toast/Toast";
 import { verifyCustomer } from "../../../../services/authServices";
+import BackButton from "../../../../sharedComponents/Button/BackButton";
+import { Col } from "react-bootstrap";
 
 const PolicyDetailPage = () => {
   const { customerId, policyId } = useParams();
@@ -154,6 +156,9 @@ const PolicyDetailPage = () => {
 
   return (
     <div className="table-container">
+      <Col style={{textAlign:'right'}}>
+      <BackButton/>
+      </Col>
       <h1>Policy Details</h1>
 
       {policyData ? (
