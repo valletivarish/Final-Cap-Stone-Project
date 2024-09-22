@@ -140,7 +140,7 @@ function App() {
         <Route path="/customer-dashboard/:customerId/profile" element={<CustomerProfile />} />
         <Route path="/customer-dashboard/:customerId/queries/new" element={<CreateQueryForm />} />
         <Route path="/customer-dashboard/:customerId/documents" element={<DocumentUpload />} />
-        <Route path="customer-dashboard/:customerId/plans/:planId" element={<SchemePage />} />
+        <Route path="customer-dashboard/:customerId/plans/:planId/schemes" element={<SchemePage />} />
         <Route path="customer-dashboard/:customerId/policies" element={<PolicyPage />} />
         <Route path="/customer-dashboard/:customerId/policies/:policyId" element={<PolicyDetailPage />} />
 

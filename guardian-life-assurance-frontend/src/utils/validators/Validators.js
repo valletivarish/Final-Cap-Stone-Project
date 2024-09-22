@@ -43,9 +43,14 @@ export const minLength = (value, length) => {
 };
 
 export const isStrongPassword = (value) => {
+  if (!value) {
+    return 'Password is required.'; 
+  }
+  
   if (!validator.isStrongPassword(value, { minLength: 8, minUppercase: 1, minLowercase: 1, minSymbols: 1 })) {
     return 'Password must be 8+ characters, including an uppercase letter, a lowercase letter, and a special character.';
   }
+
   return null;
 };
 export const isEqual = (value1, value2) => {

@@ -12,4 +12,5 @@ public class CommissionResponseDto {
     private double amount;
     private long agentId;   
     private String agentName;
+    private long policyNo;
 }

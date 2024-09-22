@@ -67,6 +67,9 @@ public class CommissionService {
 		commissionResponseDto.setCommissionId(commission.getCommissionId());
 		commissionResponseDto.setCommissionType(commission.getCommissionType().toString());
 		commissionResponseDto.setIssueDate(commission.getIssueDate());
+		commissionResponseDto.setPolicyNo(
+			    commission.getPolicyAccount() != null ? commission.getPolicyAccount().getPolicyNo() : 0
+			);
 		return commissionResponseDto;
 	}
 

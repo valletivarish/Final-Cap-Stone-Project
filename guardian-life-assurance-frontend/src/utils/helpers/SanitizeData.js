@@ -476,6 +476,7 @@ export const sanitizeCommissionData = (data, keysToBeIncluded) => {
     amount: "Amount",
     agentId: "Agent Id",
     agentName: "Agent Name",
+    policyNo:"Policy No"
   };
 
   const sanitizedContent = data.content.map((commission) => {

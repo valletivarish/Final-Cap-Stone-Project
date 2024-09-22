@@ -74,7 +74,7 @@ const RecommendPlan = () => {
       const response = await getSchemesByPlanId(planId);
       setSchemes(response);
       setReferralLink(
-        `http://localhost:3000/customer-dashboard/${customerId}/plans/${planId}`
+        `http://localhost:3000/customer-dashboard/${customerId}/plans/${planId}/schemes`
       );
     } catch (error) {
       console.error("Error fetching schemes:", error);

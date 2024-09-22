@@ -200,7 +200,7 @@ const AddEmployee = () => {
 
                     <div className="center">
                         <button className="agent-button" type="submit" disabled={loading}>
-                            {loading ? 'Adding Employee...' : 'Add Employee'}
+                            Add Employee
                         </button>
                     </div>
                 </form>

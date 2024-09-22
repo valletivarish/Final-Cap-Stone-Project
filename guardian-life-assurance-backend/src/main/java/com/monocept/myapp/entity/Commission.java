@@ -40,4 +40,8 @@ public class Commission {
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "agentId", referencedColumnName = "agentId")
     private Agent agent;
+    
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "policyNo", referencedColumnName = "policyNo", nullable = true)
+    private PolicyAccount policyAccount;
 }

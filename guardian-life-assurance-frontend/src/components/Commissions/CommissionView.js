@@ -137,6 +137,7 @@ const CommissionView = () => {
         "commissionType",
         "issueDate",
         "amount",
+        "policyNo",
         "agentId",
         "agentName",
       ]);

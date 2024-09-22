@@ -132,8 +132,6 @@ public class AgentManagementServiceImpl implements AgentManagementService {
 
 	private AgentResponseDto convertAgentToAgentResponseDto(Agent agent) {
 		AgentResponseDto agentResponseDto = new AgentResponseDto();
-		agentResponseDto.setFirstName(agent.getFirstName());
-		agentResponseDto.setLastName(agent.getLastName());
 		agentResponseDto.setAgentId(agent.getAgentId());
 		Address address = agent.getAddress();
 		User user = agent.getUser();
