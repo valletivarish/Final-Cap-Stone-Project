@@ -34,4 +34,6 @@ public interface InsuranceSchemeRepository extends JpaRepository<InsuranceScheme
 	
 	List<InsuranceScheme> findByInsurancePlan_PlanId(Long planId);
 
+	boolean existsInsuranceSchemeBySchemeName(String schemeName);
+
 }

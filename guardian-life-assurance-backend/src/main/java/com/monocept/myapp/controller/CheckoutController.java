@@ -29,6 +29,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("guardian-life-assurance/checkout")
@@ -46,7 +47,7 @@ public class CheckoutController {
 	@PostMapping("/sessions")
 	@PreAuthorize("hasRole('CUSTOMER')")
 	@Operation(summary = "Create a Checkout Session", description = "Creates a checkout session for payments. Requires the amount and request data to initiate a Stripe checkout session. Returns the checkout session URL.")
-	public ResponseEntity<String> createCheckoutSession(@RequestBody Map<String, Object> requestBody) {
+	public ResponseEntity<String> createCheckoutSession(@Valid @RequestBody Map<String, Object> requestBody) {
 		double amount = Double.parseDouble(requestBody.get("amount").toString());
 		String successUrl = "http://localhost:3000/success";
 		String cancelUrl = "http://localhost:3000/cancel";

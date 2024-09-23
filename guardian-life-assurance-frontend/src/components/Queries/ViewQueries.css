@@ -15,7 +15,6 @@
     font-weight: 600;
   }
   
-  /* Filters */
   .filters {
     display: flex;
     gap: 20px;
@@ -29,8 +28,8 @@
     border-radius: 4px;
     border: 1px solid #ccc;
     transition: border-color 0.3s ease;
-    width: calc(50% - 10px); /* Each input takes 50% width minus padding */
-    min-width: 200px; /* Ensures inputs don't get too small */
+    width: calc(50% - 10px); 
+    min-width: 200px; 
   }
   
   .filters select {
@@ -47,8 +46,7 @@
   .filters select:focus {
     border-color: #007bff;
   }
-  
-  /* Pagination section styling */
+
   .pagination-section {
     display: flex;
     justify-content: space-between;
@@ -65,7 +63,6 @@
     font-size: 14px;
   }
   
-  /* Pagination button styling */
   .pagination-section button {
     padding: 10px 20px;
     font-size: 14px;
@@ -80,7 +77,6 @@
     background-color: #f1f1f1;
   }
   
-  /* Responsive design for smaller screens */
   @media (max-width: 768px) {
     .filters {
       flex-direction: column;

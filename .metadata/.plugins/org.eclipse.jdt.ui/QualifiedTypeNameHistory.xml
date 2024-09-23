@@ -10,7 +10,6 @@
     <fullyQualifiedTypeName name="com.monocept.myapp.service.EmailService"/>
     <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.GetMapping"/>
     <fullyQualifiedTypeName name="org.springframework.http.ResponseEntity"/>
-    <fullyQualifiedTypeName name="com.monocept.myapp.exception.GuardianLifeAssuranceException"/>
     <fullyQualifiedTypeName name="com.monocept.myapp.exception.GuardianLifeAssuranceException.UserNotFoundException"/>
     <fullyQualifiedTypeName name="java.util.HashMap"/>
     <fullyQualifiedTypeName name="org.springframework.data.domain.Pageable"/>
@@ -35,7 +34,6 @@
     <fullyQualifiedTypeName name="com.monocept.myapp.repository.AgentRepository"/>
     <fullyQualifiedTypeName name="com.monocept.myapp.repository.CustomerRepository"/>
     <fullyQualifiedTypeName name="com.monocept.myapp.repository.EmployeeRepository"/>
-    <fullyQualifiedTypeName name="com.monocept.myapp.exception.GuardianLifeAssuranceApiException"/>
     <fullyQualifiedTypeName name="com.monocept.myapp.repository.TokenRepository"/>
     <fullyQualifiedTypeName name="java.util.UUID"/>
     <fullyQualifiedTypeName name="org.springframework.stereotype.Service"/>
@@ -47,4 +45,8 @@
     <fullyQualifiedTypeName name="java.util.Optional"/>
     <fullyQualifiedTypeName name="jakarta.persistence.CascadeType"/>
     <fullyQualifiedTypeName name="jakarta.transaction.Transactional"/>
+    <fullyQualifiedTypeName name="com.monocept.myapp.exception.GuardianLifeAssuranceException"/>
+    <fullyQualifiedTypeName name="com.monocept.myapp.exception.GuardianLifeAssuranceApiException"/>
+    <fullyQualifiedTypeName name="org.springframework.web.client.HttpClientErrorException.BadRequest"/>
+    <fullyQualifiedTypeName name="jakarta.validation.Valid"/>
 </qualifiedTypeNameHistroy>

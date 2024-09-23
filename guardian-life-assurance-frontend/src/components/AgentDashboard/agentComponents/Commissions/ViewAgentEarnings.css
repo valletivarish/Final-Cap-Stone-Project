@@ -65,8 +65,7 @@
   .view-agent-earnings-filters button:last-child:hover {
     background-color: #5a6268;
   }
-  
-  /* Responsive design for mobile screens */
+
   @media (max-width: 768px) {
     .view-agent-earnings-filters {
       grid-template-columns: 1fr;

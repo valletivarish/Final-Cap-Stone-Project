@@ -25,6 +25,7 @@ const AddAgent = () => {
   const [selectedCity, setSelectedCity] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
@@ -161,7 +162,7 @@ const AddAgent = () => {
       showToastError('Please fix the validation errors before submitting.');
       return;
     }
-
+    setLoading(true);
     const agentData = {
       firstName,
       lastName,
@@ -176,12 +177,14 @@ const AddAgent = () => {
     };
 
     try {
-      await registerAgent(agentData); 
-      showToastSuccess('Agent added successfully!');
-      const roleBasedLink = getRoleLink(`/agents/view`);
+      const response=await registerAgent(agentData); 
+      showToastSuccess(response);
+      const roleBasedLink = getRoleLink(`/agents`);
       navigate(roleBasedLink);
     } catch (error) {
       showToastError('Failed to add agent. Please try again.');
+    }finally {
+      setLoading(false); 
     }
   };
 
@@ -377,8 +380,8 @@ const AddAgent = () => {
             </Row>
   
             <div className="center">
-              <Button variant="primary" type="submit" className="agent-button">
-                Add Agent
+              <Button variant="primary" type="submit" className={`agent-button ${loading ? 'disabled-button' : ''}`} disabled={loading}>
+              {loading ? 'Adding Agent...' : 'Add Agent'}
               </Button>
             </div>
           </Form>

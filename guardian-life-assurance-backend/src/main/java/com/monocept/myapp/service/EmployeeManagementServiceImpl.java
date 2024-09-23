@@ -49,6 +49,9 @@ public class EmployeeManagementServiceImpl implements EmployeeManagementService 
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
+	
+	@Autowired
+	private EmailService emailService;
 
 	public String createEmployee(EmployeeRequestDto employeeRequestDto) {
 		if (userRepository.existsByUsername(employeeRequestDto.getUsername())) {
@@ -77,6 +80,7 @@ public class EmployeeManagementServiceImpl implements EmployeeManagementService 
 		employee.setLastName(employeeRequestDto.getLastName());
 		employee.setSalary(employeeRequestDto.getSalary());
 		employeeRepository.save(employee);
+	    emailService.sendEmployeeCreationMail(employeeRequestDto.getFirstName(), employeeRequestDto.getLastName(), employeeRequestDto.getEmail(), employeeRequestDto.getPassword());
 
 		return "Employee " + employeeRequestDto.getFirstName() + " " + employeeRequestDto.getLastName() + " has been successfully registered.";
 	}
@@ -115,10 +119,13 @@ public class EmployeeManagementServiceImpl implements EmployeeManagementService 
 		if (employeeRequestDto.getEmail() != null && employeeRequestDto.getEmail() != "") {
 			user.setEmail(employeeRequestDto.getEmail());
 		}
-		employee.setActive(employeeRequestDto.isActive());
 		if (employeeRequestDto.getFirstName() != null && employeeRequestDto.getFirstName() != "") {
 			employee.setFirstName(employeeRequestDto.getFirstName());
 		}
+		if (employeeRequestDto.getLastName() != null && employeeRequestDto.getLastName() != "") {
+			employee.setLastName(employeeRequestDto.getLastName());
+		}
+		employee.setActive(employeeRequestDto.isActive());
 		userRepository.save(user);
 		convertEmployeeToEmployeeResponseDto(employeeRepository.save(employee));
 		return "Employee with id "+employeeRequestDto.getEmployeeId()+" updated successfully";

@@ -190,6 +190,49 @@ public class EmailServiceImpl implements EmailService {
 	    sendEmail(email, subject, body);
 	}
 
+	public void sendAgentCreationMail(String firstName, String lastName, String email, String password) {
+	    String subject = "Guardian Life Assurance - Your Login Credentials";
+
+	    String body = String.format(
+	        "Dear %s %s,\n\n" +
+	        "Your agent account has been created. Please use the following credentials to log in:\n\n" +
+	        "Email: %s\n" +
+	        "Password: %s\n\n" +
+	        "For your security, please log in and navigate to the profile section to change your password immediately. Follow the steps below:\n\n" +
+	        "1. Log in to your account.\n" +
+	        "2. Go to the top-right corner of the screen.\n" +
+	        "3. Click on 'Profile' → 'Change Password'.\n\n" +
+	        "Please update your password to prevent any unauthorized access or misuse.\n\n" +
+	        "Best regards,\n" +
+	        "Guardian Life Assurance Team",
+	        firstName, lastName, email, password
+	    );
+
+	    sendEmail(email, subject, body);
+	}
+
+	public void sendEmployeeCreationMail(String firstName, String lastName, String email, String password) {
+	    String subject = "Guardian Life Assurance - Your Employee Login Credentials";
+
+	    String body = String.format(
+	        "Dear %s %s,\n\n" +
+	        "Your employee account has been created. Please use the following credentials to log in:\n\n" +
+	        "Email: %s\n" +
+	        "Password: %s\n\n" +
+	        "For your security, please log in and navigate to the profile section to change your password immediately. Follow the steps below:\n\n" +
+	        "1. Log in to your account.\n" +
+	        "2. Go to the top-right corner of the screen.\n" +
+	        "3. Click on 'Profile' → 'Change Password'.\n\n" +
+	        "Please update your password to prevent any unauthorized access or misuse.\n\n" +
+	        "Best regards,\n" +
+	        "Guardian Life Assurance Team",
+	        firstName, lastName, email, password
+	    );
+
+	    sendEmail(email, subject, body);
+	}
+
+
 
 
 

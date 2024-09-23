@@ -94,7 +94,6 @@ h1.view-plans-header {
   background-color: #c82333;
 }
 
-/* Media Query for smaller screens */
 @media (max-width: 768px) {
   .filters {
     grid-template-columns: 1fr;

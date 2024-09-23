@@ -69,7 +69,6 @@ const ChangePassword = () => {
   const handleInputChange = (e, setter, field) => {
     setter(e.target.value);
 
-    // Validate the field and clear the error if valid
     const validationError = field === 'confirmPassword'
       ? isEqual(newPassword, e.target.value)
       : field === 'newPassword'

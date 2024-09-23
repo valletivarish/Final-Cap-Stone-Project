@@ -44,7 +44,7 @@ export const registerAgent = async (payload) => {
         },
       }
     );
-    return response;
+    return response.data;
   } catch (error) {
     handleApiError(error);
   }

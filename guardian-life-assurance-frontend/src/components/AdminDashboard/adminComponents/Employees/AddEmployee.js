@@ -94,8 +94,8 @@ const AddEmployee = () => {
 
         setLoading(true);
         try {
-            await addEmployee(formData);
-            showToastSuccess('Employee added successfully');
+            const response=await addEmployee(formData);
+            showToastSuccess(response);
 
             setFormData({
                 username: '',
@@ -199,8 +199,8 @@ const AddEmployee = () => {
 
 
                     <div className="center">
-                        <button className="agent-button" type="submit" disabled={loading}>
-                            Add Employee
+                        <button className={`agent-button ${loading ? 'disabled-button' : ''}`} type="submit" disabled={loading}>
+                        {loading ? 'Adding Employee...' : 'Add Employee'}
                         </button>
                     </div>
                 </form>

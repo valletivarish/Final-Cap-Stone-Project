@@ -88,7 +88,7 @@ const EditEmployeeForm = () => {
                             value={formData.username}
                             onChange={handleInputChange}
                             className="agent-input"
-                            required
+                            readOnly
                         />
                     </div>
 
@@ -127,7 +127,7 @@ const EditEmployeeForm = () => {
                             value={formData.email}
                             onChange={handleInputChange}
                             className="agent-input"
-                            required
+                            readOnly
                         />
                     </div>
 
