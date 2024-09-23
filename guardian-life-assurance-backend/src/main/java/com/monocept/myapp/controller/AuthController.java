@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -103,7 +102,7 @@ public class AuthController {
 	@PutMapping("/verify-otp")
 	@Operation(summary = "Verify OTP and Set New Password", description = "Verify the OTP and set a new password for the user.")
 	public ResponseEntity<String> verifyOtpAndSetNewPassword(
-			@RequestBody @Validated ResetPasswordRequestDto forgetPasswordRequest) {
+			@RequestBody ResetPasswordRequestDto forgetPasswordRequest) {
 		String response = emailService.verifyOtpAndSetNewPassword(forgetPasswordRequest);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

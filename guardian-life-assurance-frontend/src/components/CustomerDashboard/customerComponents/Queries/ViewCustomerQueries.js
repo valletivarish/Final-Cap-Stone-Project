@@ -54,7 +54,7 @@ const ViewCustomerQueries = () => {
         const response = await getAllCustomerQueries(customerId, params);
         const sanitizedData = sanitizeCustomerQueryData(
           response, 
-          ["customerId", "queryId", "title", "message","response", "resolved", "resolvedAt", "resolvedBy"], 
+          ["queryId", "title", "message","response", "resolved", "resolvedAt", "resolvedBy"], 
           handleRespond
         );
         setQueries(sanitizedData);

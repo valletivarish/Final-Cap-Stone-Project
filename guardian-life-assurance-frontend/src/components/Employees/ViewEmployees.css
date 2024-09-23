@@ -61,8 +61,6 @@
   .view-employees-filters button:last-child:hover {
     background-color: #999;
   }
-  
-  /* Media Query for smaller screens */
   @media (max-width: 768px) {
     .view-employees-filters {
       grid-template-columns: 1fr;

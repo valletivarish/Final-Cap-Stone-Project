@@ -105,6 +105,10 @@ public class InsuranceManagementServiceImpl implements InsuranceManagementServic
 		InsurancePlan insurancePlan = insurancePlanRepository.findById(insurancePlanId)
 				.orElseThrow(() -> new GuardianLifeAssuranceException.ResourceNotFoundException(
 						"Sorry, we couldn't find an Insurance Plan with ID: " + insurancePlanId));
+		boolean existsInsuranceSchemeBySchemeName = insuranceSchemeRepository.existsInsuranceSchemeBySchemeName(requestDto.getSchemeName());
+		if(existsInsuranceSchemeBySchemeName) {
+			throw new GuardianLifeAssuranceApiException(HttpStatus.BAD_REQUEST, "Insurance scheme already exists with the same name.");
+		}
 		InsuranceScheme insuranceScheme = new InsuranceScheme();
 		insuranceScheme.setSchemeImage(ImageUtil.compressFile(multipartFile.getBytes()));
 		insuranceScheme.setDescription(requestDto.getDetailDescription());

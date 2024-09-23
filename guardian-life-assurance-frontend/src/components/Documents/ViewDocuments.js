@@ -77,14 +77,13 @@ const ViewDocuments = () => {
   };
 
   const handleApprove = async (documentId) => {
-    setSearchParams([]);
     await approveDocument(documentId);
     const params = {
-      page,
-      size,
-      sortBy,
-      direction,
-      verified,
+      page : parseInt(searchParams.get("page")) || 0,
+      size : parseInt(searchParams.get("size")) || 10,
+      sortBy : searchParams.get("sortBy") || "documentId",
+      direction: searchParams.get("direction") || "ASC",
+      verified : searchParams.get("verified") || ""
     };
     try {
       const response = await getAllDocuments(params);
@@ -103,7 +102,6 @@ const ViewDocuments = () => {
   };
 
   const handleReject = async (documentId) => {
-    setSearchParams([]);
     await rejectDocument(documentId)
     const params = {
       page:0,

@@ -63,6 +63,7 @@ public class AgentManagementServiceImpl implements AgentManagementService {
 
 	@Autowired
 	private RoleRepository roleRepository;
+
 	
 	
 	@Autowired
@@ -102,14 +103,13 @@ public class AgentManagementServiceImpl implements AgentManagementService {
 
 		addressRepository.save(address);
 		agent.setAddress(address);
-		agent.setAgentId(agentRequestDto.getAgentId());
 		agent.setFirstName(agentRequestDto.getFirstName());
 		agent.setLastName(agentRequestDto.getLastName());
 		agent.setUser(user);
-		agentRepository.save(agent);
+		Agent savedAgent=agentRepository.save(agent); 
+		emailService.sendAgentCreationMail(agentRequestDto.getFirstName(),agentRequestDto.getLastName(),agentRequestDto.getEmail(),agentRequestDto.getPassword());
 
-		System.out.println("hello");
-		return "Agent Created Successfully";
+		return "Agent Created Successfully with agent id "+savedAgent.getAgentId();
 
 	}
 

@@ -370,7 +370,7 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 					.setResolvedBy(query.getResolvedBy().getFirstName() + " " + query.getResolvedBy().getLastName());
 		}
 		queryResponseDto.setResolvedAt(query.getResolvedAt().toLocalDate());
-		queryResponseDto.setResponse(query.getResponse() != null ? query.getResponse() : "");
+		queryResponseDto.setResponse(query.getResponse() != null ? query.getResponse() : "No response yet.");
 		return queryResponseDto;
 	}
 

@@ -20,4 +20,6 @@ public interface EmailService {
 
 	void sendVerificationEmail(String verificationUrl, String email);
 
+	void sendEmployeeCreationMail(String firstName, String lastName, String email, String password);
+
 }

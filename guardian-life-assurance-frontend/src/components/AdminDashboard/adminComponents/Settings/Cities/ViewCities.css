@@ -74,22 +74,22 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    border: 1px solid #000; /* Match table border style */
+    border: 1px solid #000;
   }
   
   .cities-table th,
   .cities-table td {
     padding: 12px 15px;
     text-align: left;
-    border: 1px solid #000; /* Consistent table row and column borders */
+    border: 1px solid #000;
     font-size: 14px;
-    color: #000; /* Black text color for consistency */
+    color: #000;
   }
   
   .cities-table th {
     font-weight: 600;
     text-transform: uppercase;
-    background-color: #f1f1f1; /* Light background for table headers */
+    background-color: #f1f1f1; 
   }
   
   .cities-table td {

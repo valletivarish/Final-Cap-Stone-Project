@@ -15,6 +15,15 @@ import {
 import { verifyCustomer } from "../../../../services/authServices";
 import BackButton from "../../../../sharedComponents/Button/BackButton";
 import { Col } from "react-bootstrap";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const PolicyDetailPage = () => {
   const { customerId, policyId } = useParams();
@@ -25,6 +34,7 @@ const PolicyDetailPage = () => {
   const [claimReason, setClaimReason] = useState("");
   const [claimAmount, setClaimAmount] = useState("");
   const [document, setDocument] = useState(null);
+  const [chartData, setChartData] = useState({});
 
   const navigate = useNavigate();
   const [isCustomer, setIsCustomer] = useState(false);
@@ -75,6 +85,7 @@ const PolicyDetailPage = () => {
     try {
       const data = await fetcByPolicyId(customerId, policyId);
       setPolicyData(data);
+      calculateChartData(data);
       const today = new Date().toISOString().split("T")[0];
       if (
         data.maturityDate === today &&
@@ -154,10 +165,52 @@ const PolicyDetailPage = () => {
     }
   };
 
+  const calculateChartData = (data) => {
+    const totalInstallments = data.installments.length;
+    const paidInstallments = data.installments.filter(
+      (inst) => inst.status === "PAID"
+    ).length;
+    const remainingInstallments = totalInstallments - paidInstallments;
+    const totalPaidAmount = data.installments
+      .reduce((acc, inst) => acc + (inst.amountPaid || 0), 0)
+      .toFixed(2);
+    const totalRemainingAmount = data.installments
+      .reduce((acc, inst) => acc + (inst.amountDue || 0), 0)
+      .toFixed(2);
+    const nextInstallment = data.installments.find(
+      (inst) => inst.status === "PENDING"
+    );
+    let nextInstallmentDate;
+
+    if (data.policyStatus === "COMPLETED") {
+      nextInstallmentDate = "All Installments Paid";
+    } else if (data.policyStatus === "CLAIMED") {
+      nextInstallmentDate = "Claim Processed";
+    } else if (data.policyStatus === "DROPPED") {
+      nextInstallmentDate = "Policy Dropped";
+    } else {
+      const nextPendingInstallment = data.installments.find(
+        (inst) => inst.status === "PENDING"
+      );
+      if (nextPendingInstallment) {
+        nextInstallmentDate = nextPendingInstallment.dueDate;
+      }
+    }
+
+    setChartData({
+      totalInstallments,
+      paidInstallments,
+      remainingInstallments,
+      totalPaidAmount,
+      totalRemainingAmount,
+      nextInstallmentDate,
+    });
+  };
+
   return (
     <div className="table-container">
-      <Col style={{textAlign:'right'}}>
-      <BackButton/>
+      <Col style={{ textAlign: "right" }}>
+        <BackButton />
       </Col>
       <h1>Policy Details</h1>
 
@@ -216,9 +269,13 @@ const PolicyDetailPage = () => {
                 <th>Policy Status</th>
                 <td>{policyData.policyStatus}</td>
               </tr>
+              <tr>
+                <th>Next Installment Date</th>
+                <td>{chartData.nextInstallmentDate}</td>
+              </tr>
             </tbody>
           </table>
-          
+
           <div
             className="policydetail-action-buttons"
             style={{ display: "flex", justifyContent: "center" }}
@@ -385,7 +442,7 @@ const PolicyDetailPage = () => {
               </tr>
               <tr>
                 <th>Premium Amount</th>
-                <td>{policyData.premiumAmount}</td>
+                <td>₹{policyData.premiumAmount}</td>
               </tr>
               <tr>
                 <th>Profit Ratio</th>
@@ -393,7 +450,7 @@ const PolicyDetailPage = () => {
               </tr>
               <tr>
                 <th>Sum Assured</th>
-                <td>{policyData.sumAssured}</td>
+                <td>₹{policyData.sumAssured}</td>
               </tr>
             </tbody>
           </table>
@@ -458,6 +515,44 @@ const PolicyDetailPage = () => {
               ))}
             </tbody>
           </table>
+          {policyData && (
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+              <h2>Installment Analysis</h2>
+              <ResponsiveContainer width="40%" height={300}>
+                <BarChart
+                  data={[
+                    {
+                      name: "Installments",
+                      Total: chartData.totalInstallments || 0,
+                      Paid: chartData.paidInstallments || 0,
+                      Remaining: chartData.remainingInstallments || 0,
+                    },
+                  ]}
+                >
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="Total" fill="#8884d8" />
+                  <Bar dataKey="Paid" fill="#82ca9d" />
+                  <Bar dataKey="Remaining" fill="#ff7300" />
+                </BarChart>
+              </ResponsiveContainer>
+
+              <table className="table">
+                <tbody>
+                  <tr>
+                    <th>Total Amount Paid</th>
+                    <td>₹{chartData.totalPaidAmount || 0}</td>
+                  </tr>
+                  <tr>
+                    <th>Amount Still to be Paid</th>
+                    <td>₹{chartData.totalRemainingAmount || 0}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {policyData.policyStatus == "PENDING" && (
             <div className="cancel-button-container">

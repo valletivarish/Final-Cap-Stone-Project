@@ -68,11 +68,11 @@ h1 {
 
 @media (max-width: 768px) {
   .view-payments-filters {
-    grid-template-columns: 1fr; /* Stack elements in mobile view */
+    grid-template-columns: 1fr; 
   }
 
   .view-payments-filters button {
-    grid-column: span 1; /* Ensure buttons stack correctly in mobile */
+    grid-column: span 1; 
     width: 100%; 
   }
 }

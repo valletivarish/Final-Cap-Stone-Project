@@ -17,7 +17,7 @@ const ViewSchemes = () => {
 
   const page = parseInt(searchParams.get("page")) || 0;
   const size = parseInt(searchParams.get("size")) || 5;
-  const sortBy = searchParams.get("sortBy") || "schemeName";
+  const sortBy = searchParams.get("sortBy") || "schemeId";
   const direction = searchParams.get("direction") || "ASC";
   const planId = searchParams.get("planId") || "";
   const schemeName = searchParams.get("schemeName") || "";
@@ -44,7 +44,7 @@ const ViewSchemes = () => {
       try {
         const response = await getAllSchemes(params);
         const sanitizedData = sanitizeSchemeData(response, [
-          "schemeId", "schemeName", "planName", "minAmount", "maxAmount", "schemeImage", "active"
+          "schemeId", "schemeName","planId", "planName", "minAmount", "maxAmount", "schemeImage", "active"
         ], handleShowMore);
         setSchemes(sanitizedData);
       } catch (err) {

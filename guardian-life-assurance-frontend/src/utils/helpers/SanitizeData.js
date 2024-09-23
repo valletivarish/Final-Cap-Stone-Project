@@ -170,6 +170,7 @@ export const sanitizeSchemeData = (data, keysToBeIncluded, handleShowMore) => {
   const keyMapping = {
     schemeId: "Scheme Id",
     schemeName: "Scheme Name",
+    planId:"Plan Id",
     planName: "plan name",
     active: "active",
     minAmount: "min amount",
@@ -679,7 +680,7 @@ export const sanitizeQueryData = (data, keysToBeIncluded, handleRespond) => {
         sanitizedQuery[keyMapping[key]] = query[key] ? "Resolved" : "Unresolved";
       }else if (key === "resolvedAt" && !query["resolved"]) {
         sanitizedQuery[keyMapping[key]] = "N/A";
-      } 
+      }
       else {
         sanitizedQuery[keyMapping[key]] =
           query[key] !== null && query[key] !== undefined ? query[key] : "N/A";
@@ -777,10 +778,10 @@ export const sanitizeDocumentData = (
 
     keysToBeIncluded.forEach((key) => {
       if (key === "verified") {
-        // Show "Verified" if true, "Not Verified" if false
+    
         sanitizedDocument[keyMapping[key]] = document.verified ? "Verified" : "Not Verified";
       } else if (key === "verifiedBy") {
-        // Display the verifiedBy employee, or "Not Verified" if no one has verified it yet
+
         sanitizedDocument[keyMapping[key]] = document.verifiedBy
           ? `${document.verifiedBy}`
           : "Not Verified";
@@ -790,10 +791,10 @@ export const sanitizeDocumentData = (
       }
     });
 
-    // Show approve/reject buttons only if verifiedBy is null
+ 
     const showActions = !document.verifiedBy;
 
-    // Add action buttons for view, approve, and reject
+ 
     sanitizedDocument.actions = (
       <div>
         <button className="edit button" onClick={() => handleViewDocument(document.documentId)}>

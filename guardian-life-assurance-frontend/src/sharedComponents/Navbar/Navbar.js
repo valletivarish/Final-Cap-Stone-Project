@@ -71,9 +71,6 @@ const Navbar = ({ role, setRole,refreshNavbar }) => {
       <li>
         <Link to="/register">Customer Registration</Link>
       </li>
-      <li>
-        <Link to="/contact">Contact</Link>
-      </li>
     </>
   );
 

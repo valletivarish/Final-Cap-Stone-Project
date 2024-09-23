@@ -30,7 +30,6 @@ const AddScheme = ({ setRefreshNavbar }) => {
     requiredDocuments: [],
   });
   const [schemeImage, setSchemeImage] = useState(null);
-  const [error, setError] = useState(null);
   const [documentOptions, setDocumentOptions] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -55,8 +54,7 @@ const AddScheme = ({ setRefreshNavbar }) => {
         const response = await getRequiredDocuments();
         setDocumentOptions(response);
       } catch (error) {
-        console.error("Error fetching document types:", error);
-        setError("Failed to load document types");
+        showToastError(error.message);
       }
     };
 
@@ -115,7 +113,9 @@ const AddScheme = ({ setRefreshNavbar }) => {
       const minAge = parseInt(formData.minAge, 10);
       const maxAge = parseInt(formData.maxAge, 10);
       const profitRatio = parseFloat(formData.profitRatio);
-      const registrationCommAmount = parseFloat(formData.registrationCommAmount);
+      const registrationCommAmount = parseFloat(
+        formData.registrationCommAmount
+      );
       const installmentCommRatio = parseFloat(formData.installmentCommRatio);
 
       if (minAmount >= maxAmount) {
@@ -146,7 +146,10 @@ const AddScheme = ({ setRefreshNavbar }) => {
         { field: "Registration Commission", value: registrationCommAmount },
         { field: "Installment Commission", value: installmentCommRatio },
       ];
-
+      if (formData.schemeName.trim() === "") {
+        showToastError("Scheme name cannot be empty or just spaces");
+        return;
+      }
       for (const { field, value } of numericFields) {
         if (isNaN(value) || value < 0) {
           showToastError(
@@ -176,8 +179,7 @@ const AddScheme = ({ setRefreshNavbar }) => {
       editor.current.value = "";
       setRefreshNavbar((prev) => !prev);
     } catch (error) {
-      setError("Failed to add insurance scheme");
-      showToastError("Failed to add insurance scheme");
+      showToastError(error.message);
     }
   };
 
@@ -352,7 +354,7 @@ const AddScheme = ({ setRefreshNavbar }) => {
               />
             </div>
 
-            {error && <div className="error">{error}</div>}
+
 
             <button type="submit" className="submit-button">
               Add Scheme
