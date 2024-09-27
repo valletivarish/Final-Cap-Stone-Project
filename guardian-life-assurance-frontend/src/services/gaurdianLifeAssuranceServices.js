@@ -481,12 +481,13 @@ export const getAllCustomers = async (params) => {
   }
 };
 
-export const downloadCustomerReport = async () => {
+export const downloadCustomerReport = async (params) => {
   try {
     const token = getAuthToken();
     const response = await axios.get(
       "http://localhost:8080/guardian-life-assurance/customers/pdf",
       {
+        params:params,
         responseType: "blob",
         headers: {
           Authorization: `Bearer ${token}`,

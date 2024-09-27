@@ -74,7 +74,7 @@ const ViewCustomers = () => {
   }, [searchParams]); 
 
   const handleDownloadReport = () => {
-    downloadCustomerReport();
+    downloadCustomerReport({page,size,sortBy,direction,name,city,state,isActive});
   };
 
   const handleDeactivate=async(customerId)=>{

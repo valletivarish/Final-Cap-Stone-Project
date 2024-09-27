@@ -9,8 +9,8 @@ import CustomerDashboard from "./components/CustomerDashboard/CustomerDashboard"
 import AgentDashboard from "./components/AgentDashboard/AgentDashboard";
 import CustomerRegistration from "./components/Registration/CustomerRegistration";
 import AddAgent from "./components/Agents/AddAgent/AddAgent";
-import ViewAgents from "./components/Agents/viewAgents/ViewAgents";
-import EditAgentForm from "./components/Agents/viewAgents/EditAgentForm";
+import ViewAgents from "./components/Agents/ViewAgents/ViewAgents";
+import EditAgentForm from "./components/Agents/ViewAgents/EditAgentForm";
 import CommissionView from "./components/Commissions/CommissionView";
 import CommissionWithdrawals from "./components/Commissions/CommissionWithdrawals";
 import TaxSetting from "./components/AdminDashboard/adminComponents/Settings/TaxSetting/TaxSetting";
@@ -58,7 +58,7 @@ import CreateQueryForm from "./components/CustomerDashboard/customerComponents/Q
 import DocumentUpload from "./components/CustomerDashboard/customerComponents/Documents/DocumentUpload";
 import ViewAgentEarnings from "./components/AgentDashboard/agentComponents/Commissions/ViewAgentEarnings";
 import CommissionWithdrawal from "./components/AgentDashboard/agentComponents/Commissions/CommissionWithdrawal";
-import VerifyEmail from "./components/ReActivateAccount/VerifyEmail";
+import VerifyEmail from "./components/AccountReactivation/VerifyEmail";
 function App() {
   const [role, setRole] = useState(null);
   const [refreshNavbar, setRefreshNavbar] = useState(false);
@@ -146,6 +146,7 @@ function App() {
 
         {/* Agent Routes */}
         <Route path="agent-dashboard" element={<AgentDashboard />} /> 
+        <Route path="agent-dashboard/customers/new" element={<CustomerRegistration />} /> 
         <Route path="/agent-dashboard/commissions" element={<AgentCommissionView />} />
         <Route path="/agent-dashboard/policies" element={<ViewAgentPolicies />} />
         <Route path="/agent-dashboard/policies/claims" element={<ViewAgentPolicyClaims />} />

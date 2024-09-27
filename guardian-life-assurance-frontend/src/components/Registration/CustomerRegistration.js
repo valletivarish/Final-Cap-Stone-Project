@@ -5,7 +5,7 @@ import './CustomerRegistration.css';
 import { register } from '../../services/authServices';
 import { useNavigate } from 'react-router-dom';
 import { showToastError, showToastSuccess } from '../../utils/toast/Toast';
-import { required, email as isEmail, alphanumeric, alphabetsOnly, positiveNumeric, isStrongPassword, minLength } from '../../utils/validators/Validators'; 
+import { required, email as isEmail, alphanumeric, alphabetsOnly, positiveNumeric, isStrongPassword, minLength, maxLength } from '../../utils/validators/Validators'; 
 import BackButton from '../../sharedComponents/Button/BackButton';
 import { getStateCount } from '../../services/stateAndCityManagementService';
 
@@ -61,7 +61,7 @@ const CustomerRegistration = () => {
                 error = required(value) ? 'Date of Birth is required.' : '';
                 break;
             case 'phoneNumber':
-                error = positiveNumeric(value) || minLength(value, 10) || required(value) ? 'Phone Number is invalid.' : '';
+                error = positiveNumeric(value) || minLength(value, 10) || maxLength(value,10) || required(value) ? 'Phone Number is invalid.' : '';
                 break;
             case 'username':
                 error = alphanumeric(value) || required(value) ? 'Username is invalid.' : '';
