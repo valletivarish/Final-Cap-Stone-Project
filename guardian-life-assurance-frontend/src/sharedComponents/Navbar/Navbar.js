@@ -200,6 +200,7 @@ const Navbar = ({ role, setRole,refreshNavbar }) => {
             <li className="dropdown">
               <Link to="#">Insurance</Link>
               <div className="dropdown-content">
+                <Link to={getRoleLink("/customers/new")}>Add Customer</Link>
                 <Link to={getRoleLink("/customers")}>View Customers</Link>
                 <Link to={getRoleLink("/policies")}>Insurance Account</Link>
                 <Link to={getRoleLink("/policies/payments")}>View Policy Payments</Link>

@@ -99,14 +99,15 @@ const SchemePage = () => {
       const customerAge = await fetchCustomerAge();
       setAge(customerAge);
       fetchSchemes();
-      await checkDocumentsVerification();
     } catch (error) {
       setErrorMessage("Failed to fetch customer details");
     }
   };
   const checkDocumentsVerification = async () => {
     try {
-      const documents = await verifyDocuments(customerId, planId);
+      console.log(schemes[0].schemeId)
+      const documents = await verifyDocuments(customerId, schemes[0].schemeId);
+      console.log(documents)
       setUnverifiedDocuments(documents);
     } catch (error) {
       setErrorMessage("Failed to verify documents");
@@ -118,6 +119,7 @@ const SchemePage = () => {
     try {
       const schemeData = await fetchSchemesByPlanId(planId, currentPage, 1);
       setSchemes(schemeData.content);
+      await checkDocumentsVerification();
       setTotalPages(schemeData.totalPages);
       const imagePromises = schemeData.content.map(async (scheme) => {
         const imageUrl = await fetchSchemeImage(scheme.schemeId);
@@ -182,7 +184,7 @@ const SchemePage = () => {
       console.log(requestData);
       await initiateCheckout(requestData);
     } catch (error) {
-      console.error("Error during checkout:", error);
+      showToastError("Please check your internet and please try again later")
     }
   };
 

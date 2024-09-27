@@ -57,9 +57,6 @@ public class InstallmentServiceImpl implements InstallmentService {
         if (installment.getStatus() != InstallmentStatus.PENDING) {
             throw new RuntimeException("Installment is already paid or not due");
         }
-        if (request.getAmount() > installment.getAmountDue()) {
-            throw new RuntimeException("Payment amount exceeds the due amount for this installment");
-        }
 
         installment.setAmountPaid(request.getAmount());
         installment.setPaymentDate(LocalDate.now());

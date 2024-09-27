@@ -41,7 +41,12 @@ export const minLength = (value, length) => {
   }
   return null;
 };
-
+export const maxLength = (value, length) => {
+  if (value.length > length) {
+    return `This field must be ${length} characters long.`;
+  }
+  return null;
+};
 export const isStrongPassword = (value) => {
   if (!value) {
     return 'Password is required.'; 

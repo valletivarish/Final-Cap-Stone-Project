@@ -81,7 +81,7 @@ const CustomerDashboard = () => {
 
             <Card
               icon={FaPen}
-              title="Create Query"
+              title="Raise a Query"
               subText="Submit a new query"
               link="queries/new"
               className="create-query"
