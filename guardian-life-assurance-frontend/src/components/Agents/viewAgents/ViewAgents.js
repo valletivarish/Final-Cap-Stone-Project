@@ -70,6 +70,7 @@ const ViewAgents = () => {
 
   const handleDownloadReport = () => {
     downloadAgentReport();
+    showToastSuccess('Downloaded Successfully')
   };
 
   const debouncedFetchAgents = useCallback(
