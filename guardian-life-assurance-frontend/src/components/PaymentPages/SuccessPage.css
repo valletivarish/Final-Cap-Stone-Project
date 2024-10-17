@@ -1,0 +1,206 @@
+.successContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f7f7f7;
+  font-family: Arial, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.ribbon {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background-color: transparent;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.9;
+  display: none;
+}
+
+.ribbon-start {
+  animation: float 6s ease-in-out infinite;
+  display: block;
+}
+
+.ribbon:nth-child(1) {
+  background-color: #ffcc00;
+  left: 5%;
+  animation-delay: 0s;
+  width: 15px;
+  height: 20px;
+}
+
+.ribbon:nth-child(2) {
+  background-color: #ff4081;
+  left: 15%;
+  animation-delay: 0.5s;
+  width: 20px;
+  height: 25px;
+}
+
+.ribbon:nth-child(3) {
+  background-color: #81d4fa;
+  left: 25%;
+  animation-delay: 1s;
+  width: 25px;
+  height: 30px;
+}
+
+.ribbon:nth-child(4) {
+  background-color: #4caf50;
+  left: 35%;
+  animation-delay: 1.5s;
+  width: 18px;
+  height: 20px;
+}
+
+.ribbon:nth-child(5) {
+  background-color: #f44336;
+  left: 45%;
+  animation-delay: 2s;
+  width: 22px;
+  height: 25px;
+}
+
+.ribbon:nth-child(6) {
+  background-color: #9c27b0;
+  left: 55%;
+  animation-delay: 2.5s;
+  width: 20px;
+  height: 28px;
+}
+
+.ribbon:nth-child(7) {
+  background-color: #ff9800;
+  left: 65%;
+  animation-delay: 3s;
+  width: 12px;
+  height: 22px;
+}
+
+.ribbon:nth-child(8) {
+  background-color: #00bcd4;
+  left: 75%;
+  animation-delay: 3.5s;
+  width: 18px;
+  height: 28px;
+}
+
+.ribbon:nth-child(9) {
+  background-color: #673ab7;
+  left: 85%;
+  animation-delay: 4s;
+  width: 16px;
+  height: 25px;
+}
+
+.ribbon:nth-child(10) {
+  background-color: #e91e63;
+  left: 95%;
+  animation-delay: 4.5s;
+  width: 20px;
+  height: 30px;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+  }
+  50% {
+    transform: translateY(50vh) rotate(360deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+  }
+}
+
+.contentBox {
+  text-align: center;
+  background-color: #fff;
+  padding: 50px;
+  border-radius: 15px;
+  box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.15);
+  transition: all 0.4s ease-in-out;
+  position: relative;
+  z-index: 1;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #28a745;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.tickMark {
+  font-size: 70px;
+  color: #28a745;
+  margin: 0 auto 20px;
+  animation: tickMarkAppear 0.7s ease-out forwards, tickMarkBounce 0.8s ease forwards;
+  position: relative;
+  opacity: 0;
+}
+
+@keyframes tickMarkAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tickMarkBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-12px);
+  }
+  60% {
+    transform: translateY(-6px);
+  }
+}
+
+.title {
+  font-size: 32px;
+  color: #28a745;
+  font-weight: 700;
+  margin-bottom: 15px;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.message {
+  font-size: 18px;
+  color: #555;
+  opacity: 0.7;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.messageFadeIn {
+  font-size: 18px;
+  color: #555;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}

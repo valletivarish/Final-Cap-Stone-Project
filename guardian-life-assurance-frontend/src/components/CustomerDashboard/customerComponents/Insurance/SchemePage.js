@@ -105,9 +105,7 @@ const SchemePage = () => {
   };
   const checkDocumentsVerification = async () => {
     try {
-      console.log(schemes[0].schemeId)
       const documents = await verifyDocuments(customerId, schemes[0].schemeId);
-      console.log(documents)
       setUnverifiedDocuments(documents);
     } catch (error) {
       setErrorMessage("Failed to verify documents");
@@ -119,7 +117,6 @@ const SchemePage = () => {
     try {
       const schemeData = await fetchSchemesByPlanId(planId, currentPage, 1);
       setSchemes(schemeData.content);
-      await checkDocumentsVerification();
       setTotalPages(schemeData.totalPages);
       const imagePromises = schemeData.content.map(async (scheme) => {
         const imageUrl = await fetchSchemeImage(scheme.schemeId);
@@ -137,6 +134,10 @@ const SchemePage = () => {
       setLoading(false);
     }
   };
+
+  useEffect(()=>{
+    checkDocumentsVerification();
+  },[schemes])
 
   useEffect(() => {
     fetchSchemes();
