@@ -37,6 +37,7 @@ const ViewCustomers = () => {
       let verified = false;
       if (role === "admin") {
         verified = await verifyAdmin();
+        console.log("Admin")
       } else if (role === "employee") {
         verified = await verifyEmployee();
       }
