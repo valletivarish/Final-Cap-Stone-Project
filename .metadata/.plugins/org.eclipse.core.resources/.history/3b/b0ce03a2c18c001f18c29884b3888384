@@ -89,7 +89,6 @@ public class AdminController {
 	@Operation(summary = "Approve a withdrawal request", description = "Approve a pending withdrawal request by its ID")
 	public ResponseEntity<String> approveWithdrawalRequest(@PathVariable long withdrawalId) {
 		withdrawalService.approveWithdrawal(withdrawalId);
-		
 		return ResponseEntity.ok("Withdrawal request approved and refund processed successfully.");
 	}
 
